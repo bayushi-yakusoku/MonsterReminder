@@ -13,7 +13,7 @@
 
         <!-- in order to declare a NotifyIcon, all you need is the namespace declaration (see above on line 5) and a single line -->
         <tb:TaskbarIcon x:Name="MyNotifyIcon" 
-                        IconSource="/Error.ico" 
+                        IconSource="/Icons/MonsterLogo.ico" 
                         ToolTipText="hello world" />
 
         <TextBlock Margin="26,26,24,0"
