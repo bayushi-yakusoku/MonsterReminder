@@ -7,20 +7,48 @@
         xmlns:tb="http://www.hardcodet.net/taskbar" 
         mc:Ignorable="d" 
         Title="SimpleWindowWithNotifyIcon" 
-        d:DesignHeight="500" d:DesignWidth="400">
+        Height="Auto"
+        Width="Auto"
+        SizeToContent="WidthAndHeight"
+        WindowState="Normal">
 
     <Grid>
 
         <!-- in order to declare a NotifyIcon, all you need is the namespace declaration (see above on line 5) and a single line -->
         <tb:TaskbarIcon x:Name="MyNotifyIcon" 
                         IconSource="/Icons/MonsterLogo.ico" 
-                        ToolTipText="hello world" />
+                        ToolTipText="Monster Reminder" 
+                        
+                        TrayLeftMouseUp="MyNotifyIcon_TrayLeftMouseUp"
+                        TrayMouseDoubleClick="MyNotifyIcon_TrayMouseDoubleClick">
+
+            <!-- Set a simple context menu  -->
+            <!-- the data context of the context menu is the NotifyIcon itself (see more about this in DataBinding samples) -->
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Remove Current Reminder"
+                              Click="MenuItem_Remove_Click">
+                        <MenuItem.Icon>
+                            <Image Width="16"
+                                   Height="16"
+                                   Source="/Icons/Remove.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+
+        </tb:TaskbarIcon>
 
         <TextBlock Margin="26,26,24,0"
                    VerticalAlignment="Top"
                    FontWeight="Bold"
                    TextWrapping="Wrap"
                    Text="You should see an icon in the tray." />
+        
+        <Button x:Name="ButtonStartTimer" 
+                Content="Button" 
+                Margin="26,47,234,400" 
+                Click="ButtonStartTimer_Click"/>
 
     </Grid>
 </Window>

@@ -8,9 +8,11 @@
 
   <ItemGroup>
     <None Remove="Error.ico" />
+    <None Remove="Icons\Add.png" />
     <None Remove="Icons\MonsterLogo.ico" />
     <None Remove="Icons\MonsterLogo.png" />
     <None Remove="Icons\monsterlogo_EXn_icon.ico" />
+    <None Remove="Icons\Remove.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,10 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Icons\Add.png" />
     <Resource Include="Icons\Error.ico" />
     <Resource Include="Icons\MonsterLogo.ico" />
-    <Resource Include="Icons\MonsterLogo.png" />
-    <Resource Include="Icons\monsterlogo_EXn_icon.ico" />
+    <Resource Include="Icons\Remove.png" />
   </ItemGroup>
 
 </Project>
