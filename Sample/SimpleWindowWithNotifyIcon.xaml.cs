@@ -18,7 +18,7 @@ namespace MonsterReminder.Sample
     /// <summary>
     /// Interaction logic for SimpleWindowWithNotifyIcon.xaml
     /// </summary>
-    public partial class SimpleWindowWithNotifyIcon : Page
+    public partial class SimpleWindowWithNotifyIcon : Window
     {
         public SimpleWindowWithNotifyIcon()
         {
