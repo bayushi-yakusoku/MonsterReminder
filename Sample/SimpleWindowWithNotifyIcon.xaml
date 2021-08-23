@@ -7,20 +7,95 @@
         xmlns:tb="http://www.hardcodet.net/taskbar" 
         mc:Ignorable="d" 
         Title="SimpleWindowWithNotifyIcon" 
-        d:DesignHeight="500" d:DesignWidth="400">
+        Height="Auto"
+        Width="Auto"
+        SizeToContent="WidthAndHeight"
+        WindowState="Minimized"
+        ShowInTaskbar="True" 
+        ResizeMode="NoResize" 
+        Icon="/Icons/MonsterLogo.ico" 
+        WindowStyle="None" >
 
-    <Grid>
+    <StackPanel>
 
-        <!-- in order to declare a NotifyIcon, all you need is the namespace declaration (see above on line 5) and a single line -->
         <tb:TaskbarIcon x:Name="MyNotifyIcon" 
                         IconSource="/Icons/MonsterLogo.ico" 
-                        ToolTipText="hello world" />
+                        ToolTipText="Monster Reminder" 
+                        
+                        TrayLeftMouseUp="MyNotifyIcon_LeftClick"
+                        TrayRightMouseUp="MyNotifyIcon_RightClick"
+                        TrayMouseDoubleClick="MyNotifyIcon_DoubleClick">
 
-        <TextBlock Margin="26,26,24,0"
-                   VerticalAlignment="Top"
-                   FontWeight="Bold"
-                   TextWrapping="Wrap"
-                   Text="You should see an icon in the tray." />
+            <!-- Set a simple context menu  -->
+            <!-- the data context of the context menu is the NotifyIcon itself (see more about this in DataBinding samples) -->
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Remove Current Reminder"
+                              Click="MenuItem_Remove_Click">
+                        <MenuItem.Icon>
+                            <Image Width="16"
+                                   Height="16"
+                                   Source="/Icons/Remove.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
 
-    </Grid>
+        <StatusBar>
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+
+            <StatusBarItem>
+                <TextBlock Text="Monster Reminder Configurator"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="1">
+                <Button x:Name="Button_Minimize" 
+                        Content=" - "
+                        Click="Button_Minimize_Click" />
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="2">
+                <Button x:Name="Button_Close" 
+                        Content=" x "
+                        Click="Button_Close_Click"/>
+            </StatusBarItem>
+        </StatusBar>
+
+        <Grid ShowGridLines="True">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- in order to declare a NotifyIcon, all you need is the namespace declaration (see above on line 5) and a single line -->
+
+
+            <TextBlock Grid.Column="0" 
+                       Margin="26,26,24,0"
+                       VerticalAlignment="Top"
+                       FontWeight="Bold"
+                       TextWrapping="Wrap"
+                       Text="You should see an icon in the tray." />
+
+            <Button x:Name="ButtonStartTimer" 
+                    Content="Button" 
+                    Margin="26,47,234,400" 
+                    Click="ButtonStartTimer_Click"/>
+
+        </Grid>
+
+        <StatusBar>
+            <StatusBarItem>
+                <TextBlock Name="lblCursorPosition" />
+            </StatusBarItem>
+        </StatusBar>
+    </StackPanel>
 </Window>
