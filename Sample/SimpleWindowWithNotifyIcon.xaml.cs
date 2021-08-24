@@ -26,9 +26,8 @@ namespace MonsterReminder.Sample
     /// </summary>
     public partial class SimpleWindowWithNotifyIcon : Window
     {
-        Timer TimerMonster;
-
-        Timer TimerSingleClick;
+        private Timer timerMonster;
+        private Timer timerSingleClick;
 
         public SimpleWindowWithNotifyIcon()
         {
@@ -41,24 +40,24 @@ namespace MonsterReminder.Sample
 
         private void InitializeTimer()
         {
-            TimerMonster = new Timer
+            timerMonster = new Timer
             {
                 Interval = 5000,
                 AutoReset = false
             };
 
-            TimerMonster.Elapsed += Timer_Elapsed;
+            timerMonster.Elapsed += Timer_Elapsed;
         }
 
         private void InitializeTimerSingleClick()
         {
-            TimerSingleClick = new Timer
+            timerSingleClick = new Timer
             {
                 Interval = 1000,
                 AutoReset = false
             };
 
-            TimerSingleClick.Elapsed += TimerSingleClick_Elapsed;
+            timerSingleClick.Elapsed += TimerSingleClick_Elapsed;
         }
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
@@ -68,7 +67,7 @@ namespace MonsterReminder.Sample
 
         private void ButtonStartTimer_Click(object sender, RoutedEventArgs e)
         {
-            TimerMonster.Start();
+            timerMonster.Start();
         }
 
         /*
@@ -95,15 +94,15 @@ namespace MonsterReminder.Sample
          *  EVENTS
          * ********************************************************** */
 
-        int pouf = 0;
+        private int pouf;
         private void MyNotifyIcon_LeftClick(object sender, RoutedEventArgs e)
         {
             pouf++;
             e.Handled = true;
 
-            TimerSingleClick.Stop();
-            TimerSingleClick.Start();
-            
+            timerSingleClick.Stop();
+            timerSingleClick.Start();
+
             Debug.WriteLine($"{DateTime.Now}: Debug - Single Click Event: pouf={pouf}");
 
         }
@@ -112,8 +111,12 @@ namespace MonsterReminder.Sample
         {
             Debug.WriteLine($"{DateTime.Now}: Debug - Timer Single Click Elpased!");
 
-            // Will be executed from a thread different from the UI Element owner
-            this.Dispatcher.Invoke(() =>
+            /*
+             * Will be executed from a thread different from the UI Element owner:
+             * https://stackoverflow.com/questions/9732709/the-calling-thread-cannot-access-this-object-because-a-different-thread-owns-it
+             *
+             */
+            Dispatcher.Invoke(() =>
             {
                 ToggleDisplay();
             });
@@ -121,25 +124,25 @@ namespace MonsterReminder.Sample
 
         private void MyNotifyIcon_RightClick(object sender, RoutedEventArgs e)
         {
-            
+
         }
 
         private void ToggleDisplay()
         {
             int margin = 10;
 
-            if (WindowState != WindowState.Minimized) 
+            if (WindowState != WindowState.Minimized)
             {
                 WindowState = WindowState.Minimized;
                 return;
             }
 
-            var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
+            Rect desktopWorkingArea = SystemParameters.WorkArea;
 
-            this.WindowState = WindowState.Normal;
+            WindowState = WindowState.Normal;
 
-            this.Left = desktopWorkingArea.Right - (this.Width + margin);
-            this.Top = desktopWorkingArea.Bottom - (this.Height + margin);
+            Left = desktopWorkingArea.Right - (Width + margin);
+            Top = desktopWorkingArea.Bottom - (Height + margin);
         }
 
         private void MyNotifyIcon_DoubleClick(object sender, RoutedEventArgs e)
@@ -149,7 +152,7 @@ namespace MonsterReminder.Sample
 
             //Timer.Start();
 
-            TimerSingleClick.Stop();
+            timerSingleClick.Stop();
 
             Debug.WriteLine($"{DateTime.Now}: Debug - Double Click Event: pouf={pouf}");
         }
@@ -161,12 +164,12 @@ namespace MonsterReminder.Sample
 
         private void Button_Minimize_Click(object sender, RoutedEventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
+            WindowState = WindowState.Minimized;
         }
 
         private void Button_Close_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
     }
 }
