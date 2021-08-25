@@ -1,22 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Timer = System.Timers.Timer;
 
 namespace MonsterReminder.Sample
@@ -36,6 +22,8 @@ namespace MonsterReminder.Sample
             InitializeTimer();
 
             InitializeTimerSingleClick();
+
+            InitializeSoundPlayer();
         }
 
         private void InitializeTimer()
@@ -60,14 +48,21 @@ namespace MonsterReminder.Sample
             timerSingleClick.Elapsed += TimerSingleClick_Elapsed;
         }
 
+        WMPLib.WindowsMediaPlayer player;
+
+        private void InitializeSoundPlayer()
+        {
+            player = new WMPLib.WindowsMediaPlayer();
+
+            //player.URL = @"F:\Sons\Chansons\Various Artists\Chirac en prison.mp3";
+            player.URL = @"F:\Code\C#\MonsterReminder\Sounds\Abdos Par Vivi.3gp";
+            
+            player.controls.stop();
+        }
+
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             Debug.WriteLine($"{DateTime.Now}: Debug - Ring!");
-        }
-
-        private void ButtonStartTimer_Click(object sender, RoutedEventArgs e)
-        {
-            timerMonster.Start();
         }
 
         /*
@@ -88,6 +83,28 @@ namespace MonsterReminder.Sample
             MyNotifyIcon.Dispose();
 
             base.OnClosing(e);
+        }
+
+        private void ToggleDisplay()
+        {
+            int margin = 10;
+
+            if (WindowState != WindowState.Minimized)
+            {
+                WindowState = WindowState.Minimized;
+                ShowInTaskbar = false;
+
+                return;
+            }
+
+            Rect desktopWorkingArea = SystemParameters.WorkArea;
+
+            WindowState = WindowState.Normal;
+            ShowInTaskbar = true;
+            Topmost = true;
+
+            Left = desktopWorkingArea.Right - (Width + margin);
+            Top = desktopWorkingArea.Bottom - (Height + margin);
         }
 
         /* **********************************************************
@@ -127,24 +144,6 @@ namespace MonsterReminder.Sample
 
         }
 
-        private void ToggleDisplay()
-        {
-            int margin = 10;
-
-            if (WindowState != WindowState.Minimized)
-            {
-                WindowState = WindowState.Minimized;
-                return;
-            }
-
-            Rect desktopWorkingArea = SystemParameters.WorkArea;
-
-            WindowState = WindowState.Normal;
-
-            Left = desktopWorkingArea.Right - (Width + margin);
-            Top = desktopWorkingArea.Bottom - (Height + margin);
-        }
-
         private void MyNotifyIcon_DoubleClick(object sender, RoutedEventArgs e)
         {
             // preventing single click event to be fired after this double click
@@ -164,12 +163,22 @@ namespace MonsterReminder.Sample
 
         private void Button_Minimize_Click(object sender, RoutedEventArgs e)
         {
-            WindowState = WindowState.Minimized;
+            ToggleDisplay();
         }
 
         private void Button_Close_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void ButtonStop_Click(object sender, RoutedEventArgs e)
+        {
+            player.controls.stop();
+        }
+
+        private void ButtonPlay_Click(object sender, RoutedEventArgs e)
+        {
+            player.controls.play();
         }
     }
 }

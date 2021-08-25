@@ -11,7 +11,7 @@
         Width="Auto"
         SizeToContent="WidthAndHeight"
         WindowState="Minimized"
-        ShowInTaskbar="True" 
+        ShowInTaskbar="False" 
         ResizeMode="NoResize" 
         Icon="/Icons/MonsterLogo.ico" 
         WindowStyle="None" >
@@ -74,21 +74,36 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+            </Grid.RowDefinitions>
 
             <!-- in order to declare a NotifyIcon, all you need is the namespace declaration (see above on line 5) and a single line -->
 
 
-            <TextBlock Grid.Column="0" 
-                       Margin="26,26,24,0"
-                       VerticalAlignment="Top"
+            <TextBlock Grid.Column="0" Grid.Row="0"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
                        FontWeight="Bold"
                        TextWrapping="Wrap"
                        Text="You should see an icon in the tray." />
 
-            <Button x:Name="ButtonStartTimer" 
-                    Content="Button" 
-                    Margin="26,47,234,400" 
-                    Click="ButtonStartTimer_Click"/>
+            <Button Grid.Column="0" Grid.Row="1"
+                    x:Name="ButtonPlay" 
+                    Margin="10, 10, 10, 10"
+                    Content="Play"
+                    Click="ButtonPlay_Click"/>
+
+            <Button Grid.Column="0" Grid.Row="2"
+                    x:Name="ButtonStop" 
+                    Margin="10, 10, 10, 10"
+                    Content="Stop" 
+                    Click="ButtonStop_Click"/>
 
         </Grid>
 
