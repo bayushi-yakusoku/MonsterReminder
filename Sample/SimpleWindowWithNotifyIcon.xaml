@@ -70,7 +70,7 @@
             </StatusBarItem>
         </StatusBar>
 
-        <Grid ShowGridLines="True">
+        <Grid d:ShowGridLines="True">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
@@ -97,14 +97,34 @@
                     x:Name="ButtonPlay" 
                     Margin="10, 10, 10, 10"
                     Content="Play"
-                    Click="ButtonPlay_Click"/>
+                    Click="ButtonPlay_Click" />
 
             <Button Grid.Column="0" Grid.Row="2"
                     x:Name="ButtonStop" 
                     Margin="10, 10, 10, 10"
                     Content="Stop" 
-                    Click="ButtonStop_Click"/>
+                    Click="ButtonStop_Click" />
 
+            <Grid d:ShowGridLines="True"
+                  Grid.Column="0" Grid.Row="4">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" Grid.Row="0"
+                       VerticalAlignment="Center"
+                       Content="Reminder Duration" />
+
+                <TextBox Grid.Column="1" Grid.Row="0" 
+                         x:Name="monsterReminderDuration"
+                         Width="50"
+                         HorizontalContentAlignment="Right"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Left"
+                         Text="10" />
+            </Grid>
         </Grid>
 
         <StatusBar>

@@ -30,11 +30,11 @@ namespace MonsterReminder.Sample
         {
             timerMonster = new Timer
             {
-                Interval = 5000,
+                Interval = 60000,
                 AutoReset = false
             };
 
-            timerMonster.Elapsed += Timer_Elapsed;
+            timerMonster.Elapsed += TimerMonster_Elapsed;
         }
 
         private void InitializeTimerSingleClick()
@@ -60,9 +60,10 @@ namespace MonsterReminder.Sample
             player.controls.stop();
         }
 
-        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        private void TimerMonster_Elapsed(object sender, ElapsedEventArgs e)
         {
             Debug.WriteLine($"{DateTime.Now}: Debug - Ring!");
+            player.controls.play();
         }
 
         /*
@@ -111,22 +112,17 @@ namespace MonsterReminder.Sample
          *  EVENTS
          * ********************************************************** */
 
-        private int pouf;
         private void MyNotifyIcon_LeftClick(object sender, RoutedEventArgs e)
         {
-            pouf++;
             e.Handled = true;
 
             timerSingleClick.Stop();
             timerSingleClick.Start();
-
-            Debug.WriteLine($"{DateTime.Now}: Debug - Single Click Event: pouf={pouf}");
-
         }
 
         private void TimerSingleClick_Elapsed(object sender, ElapsedEventArgs e)
         {
-            Debug.WriteLine($"{DateTime.Now}: Debug - Timer Single Click Elpased!");
+            Debug.WriteLine($"{DateTime.Now}: Debug - Single Click Event!");
 
             /*
              * Will be executed from a thread different from the UI Element owner:
@@ -149,11 +145,27 @@ namespace MonsterReminder.Sample
             // preventing single click event to be fired after this double click
             //e.Handled = true;
 
-            //Timer.Start();
-
             timerSingleClick.Stop();
 
-            Debug.WriteLine($"{DateTime.Now}: Debug - Double Click Event: pouf={pouf}");
+            int duration;
+            try
+            {
+                duration = Convert.ToInt32(monsterReminderDuration.Text);
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine($"{DateTime.Now}: {err.Message}");
+                
+                throw;
+            }
+
+            timerMonster.Stop();
+            timerMonster.Interval = duration * 1000;
+            timerMonster.Start();
+
+            Debug.WriteLine($"{DateTime.Now}: Debug - Double Click Event");
+
+            Debug.WriteLine($"{DateTime.Now}: Debug - Monster registered, reminder in {duration} second(s)");
         }
 
         private void MenuItem_Remove_Click(object sender, RoutedEventArgs e)
