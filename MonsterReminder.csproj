@@ -14,7 +14,9 @@
     <None Remove="Icons\MonsterLogo.ico" />
     <None Remove="Icons\MonsterLogo.png" />
     <None Remove="Icons\monsterlogo_EXn_icon.ico" />
+    <None Remove="Icons\redmonsterlogo.ico" />
     <None Remove="Icons\Remove.png" />
+    <None Remove="Icons\violetmonsterlogo.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +39,7 @@
     <Resource Include="Icons\Add.png" />
     <Resource Include="Icons\Error.ico" />
     <Resource Include="Icons\MonsterLogo.ico" />
+    <Resource Include="Icons\redmonsterlogo.ico" />
     <Resource Include="Icons\Remove.png" />
   </ItemGroup>
 

@@ -123,13 +123,30 @@
                          HorizontalContentAlignment="Right"
                          VerticalAlignment="Center"
                          HorizontalAlignment="Left"
-                         Text="10" />
+                         Text="30" />
             </Grid>
         </Grid>
 
         <StatusBar>
-            <StatusBarItem>
-                <TextBlock Name="lblCursorPosition" />
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem Grid.Column="0">
+                <TextBlock x:Name="textRegisteredAt" 
+                           Text="Registered at 17:15:30" />
+            </StatusBarItem>
+            <Separator Grid.Column="1" />
+            <StatusBarItem Grid.Column="2">
+                <ProgressBar x:Name="progressBarReminder" 
+                             Value="0" Width="90" Height="16" />
             </StatusBarItem>
         </StatusBar>
     </StackPanel>

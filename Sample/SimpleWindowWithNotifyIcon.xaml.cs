@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Timers;
 using System.Windows;
 using Timer = System.Timers.Timer;
@@ -14,19 +15,33 @@ namespace MonsterReminder.Sample
     {
         private Timer timerMonster;
         private Timer timerSingleClick;
+        private Timer timerProgressBar;
 
         public SimpleWindowWithNotifyIcon()
         {
             InitializeComponent();
 
-            InitializeTimer();
+            InitializeTimerMonster();
 
             InitializeTimerSingleClick();
+
+            InitializeTimerProgressBar();
 
             InitializeSoundPlayer();
         }
 
-        private void InitializeTimer()
+        private void InitializeTimerProgressBar()
+        {
+            timerProgressBar = new Timer
+            {
+                Interval = 1000,
+                AutoReset = true
+            };
+
+            timerProgressBar.Elapsed += Elapsed_TimerProgressBar;
+        }
+
+        private void InitializeTimerMonster()
         {
             timerMonster = new Timer
             {
@@ -34,7 +49,7 @@ namespace MonsterReminder.Sample
                 AutoReset = false
             };
 
-            timerMonster.Elapsed += TimerMonster_Elapsed;
+            timerMonster.Elapsed += Elapsed_TimerMonster;
         }
 
         private void InitializeTimerSingleClick()
@@ -45,7 +60,7 @@ namespace MonsterReminder.Sample
                 AutoReset = false
             };
 
-            timerSingleClick.Elapsed += TimerSingleClick_Elapsed;
+            timerSingleClick.Elapsed += Elapsed_TimerSingleClick;
         }
 
         WMPLib.WindowsMediaPlayer player;
@@ -58,12 +73,6 @@ namespace MonsterReminder.Sample
             player.URL = @"F:\Code\C#\MonsterReminder\Sounds\Abdos Par Vivi.3gp";
             
             player.controls.stop();
-        }
-
-        private void TimerMonster_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            Debug.WriteLine($"{DateTime.Now}: Debug - Ring!");
-            player.controls.play();
         }
 
         /*
@@ -108,19 +117,67 @@ namespace MonsterReminder.Sample
             Top = desktopWorkingArea.Bottom - (Height + margin);
         }
 
-        /* **********************************************************
-         *  EVENTS
-         * ********************************************************** */
+        DateTime refTime;
+        int refDuration;
 
-        private void MyNotifyIcon_LeftClick(object sender, RoutedEventArgs e)
+        private void RegisterMonster()
         {
-            e.Handled = true;
+            refTime = DateTime.Now;
+            progressBarReminder.Value = 0;
 
-            timerSingleClick.Stop();
-            timerSingleClick.Start();
+            string formatedRefTime = string.Format("{0:T}", refTime);
+
+            textRegisteredAt.Text = $"Registered at {formatedRefTime}";
+
+            try
+            {
+                refDuration = 1000 * Convert.ToInt32(monsterReminderDuration.Text);
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine($"{DateTime.Now}: {err.Message}");
+
+                throw;
+            }
+
+            timerMonster.Stop();
+            timerMonster.Interval = refDuration;
+            timerMonster.Start();
+
+            MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\redmonsterlogo.ico");
+
+            Debug.WriteLine($"{DateTime.Now}: Debug - Monster registered, reminder in {monsterReminderDuration.Text} second(s)");
         }
 
-        private void TimerSingleClick_Elapsed(object sender, ElapsedEventArgs e)
+        private void MonsterIsReadyToDrink()
+        {
+            timerMonster.Stop();
+            timerProgressBar.Stop();
+
+            progressBarReminder.Value = 100;
+            textRegisteredAt.Text = $"Ready To Drink!";
+
+            MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
+        }
+
+        private int CalculateProgressValue()
+        {
+            DateTime currentTime = DateTime.Now;
+
+            double msPassed = (currentTime - refTime).TotalMilliseconds;
+
+            double percent = (msPassed / refDuration) * 100;
+
+            if (percent > 100)
+                percent = 100;
+
+            return (int) percent;
+        }
+
+        /* **********************************************************
+         *  ELAPSED
+         * ********************************************************** */
+        private void Elapsed_TimerSingleClick(object sender, ElapsedEventArgs e)
         {
             Debug.WriteLine($"{DateTime.Now}: Debug - Single Click Event!");
 
@@ -135,6 +192,41 @@ namespace MonsterReminder.Sample
             });
         }
 
+        private void Elapsed_TimerMonster(object sender, ElapsedEventArgs e)
+        {
+            Debug.WriteLine($"{DateTime.Now}: Debug - Ring!");
+            player.controls.play();
+
+            Dispatcher.Invoke(() =>
+            {
+                MonsterIsReadyToDrink();
+            });
+        }
+
+        private void Elapsed_TimerProgressBar(object sender, ElapsedEventArgs e)
+        {
+            int progressValue = CalculateProgressValue();
+
+            Debug.WriteLine($"{DateTime.Now}: Debug - Progress: {progressValue}%");
+
+            Dispatcher.Invoke(() =>
+            {
+                progressBarReminder.Value = progressValue;
+            });
+        }
+
+        /* **********************************************************
+         *  EVENTS
+         * ********************************************************** */
+
+        private void MyNotifyIcon_LeftClick(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            timerSingleClick.Stop();
+            timerSingleClick.Start();
+        }
+
         private void MyNotifyIcon_RightClick(object sender, RoutedEventArgs e)
         {
 
@@ -147,25 +239,12 @@ namespace MonsterReminder.Sample
 
             timerSingleClick.Stop();
 
-            int duration;
-            try
-            {
-                duration = Convert.ToInt32(monsterReminderDuration.Text);
-            }
-            catch (Exception err)
-            {
-                Debug.WriteLine($"{DateTime.Now}: {err.Message}");
-                
-                throw;
-            }
-
-            timerMonster.Stop();
-            timerMonster.Interval = duration * 1000;
-            timerMonster.Start();
+            RegisterMonster();
 
             Debug.WriteLine($"{DateTime.Now}: Debug - Double Click Event");
 
-            Debug.WriteLine($"{DateTime.Now}: Debug - Monster registered, reminder in {duration} second(s)");
+            timerProgressBar.Stop();
+            timerProgressBar.Start();
         }
 
         private void MenuItem_Remove_Click(object sender, RoutedEventArgs e)
@@ -186,6 +265,8 @@ namespace MonsterReminder.Sample
         private void ButtonStop_Click(object sender, RoutedEventArgs e)
         {
             player.controls.stop();
+            timerMonster.Stop();
+            timerProgressBar.Stop();
         }
 
         private void ButtonPlay_Click(object sender, RoutedEventArgs e)
