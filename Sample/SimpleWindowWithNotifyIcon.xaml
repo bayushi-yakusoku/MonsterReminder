@@ -141,7 +141,7 @@
             </StatusBar.ItemsPanel>
             <StatusBarItem Grid.Column="0">
                 <TextBlock x:Name="textRegisteredAt" 
-                           Text="Registered at 17:15:30" />
+                           Text="Nothing To Drink..." />
             </StatusBarItem>
             <Separator Grid.Column="1" />
             <StatusBarItem Grid.Column="2">

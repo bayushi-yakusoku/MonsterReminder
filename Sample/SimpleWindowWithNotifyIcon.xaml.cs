@@ -97,33 +97,53 @@ namespace MonsterReminder.Sample
 
         private void ToggleDisplay()
         {
-            int margin = 10;
-
-            if (WindowState != WindowState.Minimized)
+            /*
+             * Will be executed from a thread different from the UI Element owner:
+             * https://stackoverflow.com/questions/9732709/the-calling-thread-cannot-access-this-object-because-a-different-thread-owns-it
+             *
+             */
+            Dispatcher.Invoke(() =>
             {
-                WindowState = WindowState.Minimized;
-                ShowInTaskbar = false;
+                if (WindowState != WindowState.Minimized)
+                {
+                    WindowState = WindowState.Minimized;
+                    ShowInTaskbar = false;
 
-                return;
-            }
+                    timerProgressBar.Stop();
 
-            Rect desktopWorkingArea = SystemParameters.WorkArea;
+                    return;
+                }
 
-            WindowState = WindowState.Normal;
-            ShowInTaskbar = true;
-            Topmost = true;
+                if (monsterInTheFridge)
+                {
+                    UpdateProgressBar();
+                    timerProgressBar.Start();
+                }
 
-            Left = desktopWorkingArea.Right - (Width + margin);
-            Top = desktopWorkingArea.Bottom - (Height + margin);
+                WindowState = WindowState.Normal;
+                ShowInTaskbar = true;
+                Topmost = true;
+
+                Rect desktopWorkingArea = SystemParameters.WorkArea;
+                int margin = 10;
+
+                Left = desktopWorkingArea.Right - (Width + margin);
+                Top = desktopWorkingArea.Bottom - (Height + margin);
+            });
         }
 
         DateTime refTime;
         int refDuration;
+        bool monsterInTheFridge = false;
 
         private void RegisterMonster()
         {
             refTime = DateTime.Now;
+            monsterInTheFridge = true;
             progressBarReminder.Value = 0;
+            
+            if (WindowState != WindowState.Minimized)
+                timerProgressBar.Start();
 
             string formatedRefTime = string.Format("{0:T}", refTime);
 
@@ -151,11 +171,33 @@ namespace MonsterReminder.Sample
 
         private void MonsterIsReadyToDrink()
         {
+            Debug.WriteLine($"{DateTime.Now}: Debug - Ring!");
+            player.controls.play();
+
+            timerMonster.Stop();
+            timerProgressBar.Stop();
+            monsterInTheFridge = false;
+
+            Dispatcher.Invoke(() =>
+            {
+                progressBarReminder.Value = 100;
+                textRegisteredAt.Text = $"Ready To Drink!";
+            });
+
+            MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
+        }
+
+        private void UnRegisteredMonster()
+        {
+            monsterInTheFridge = false;
             timerMonster.Stop();
             timerProgressBar.Stop();
 
-            progressBarReminder.Value = 100;
-            textRegisteredAt.Text = $"Ready To Drink!";
+            Dispatcher.Invoke(() =>
+            {
+                progressBarReminder.Value = 0;
+                textRegisteredAt.Text = $"Nothing To Drink!";
+            });
 
             MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
         }
@@ -174,36 +216,7 @@ namespace MonsterReminder.Sample
             return (int) percent;
         }
 
-        /* **********************************************************
-         *  ELAPSED
-         * ********************************************************** */
-        private void Elapsed_TimerSingleClick(object sender, ElapsedEventArgs e)
-        {
-            Debug.WriteLine($"{DateTime.Now}: Debug - Single Click Event!");
-
-            /*
-             * Will be executed from a thread different from the UI Element owner:
-             * https://stackoverflow.com/questions/9732709/the-calling-thread-cannot-access-this-object-because-a-different-thread-owns-it
-             *
-             */
-            Dispatcher.Invoke(() =>
-            {
-                ToggleDisplay();
-            });
-        }
-
-        private void Elapsed_TimerMonster(object sender, ElapsedEventArgs e)
-        {
-            Debug.WriteLine($"{DateTime.Now}: Debug - Ring!");
-            player.controls.play();
-
-            Dispatcher.Invoke(() =>
-            {
-                MonsterIsReadyToDrink();
-            });
-        }
-
-        private void Elapsed_TimerProgressBar(object sender, ElapsedEventArgs e)
+        private void UpdateProgressBar()
         {
             int progressValue = CalculateProgressValue();
 
@@ -213,6 +226,26 @@ namespace MonsterReminder.Sample
             {
                 progressBarReminder.Value = progressValue;
             });
+        }
+
+        /* **********************************************************
+         *  ELAPSED
+         * ********************************************************** */
+        private void Elapsed_TimerSingleClick(object sender, ElapsedEventArgs e)
+        {
+            Debug.WriteLine($"{DateTime.Now}: Debug - Single Click Event!");
+
+            ToggleDisplay();
+        }
+
+        private void Elapsed_TimerMonster(object sender, ElapsedEventArgs e)
+        {
+            MonsterIsReadyToDrink();
+        }
+
+        private void Elapsed_TimerProgressBar(object sender, ElapsedEventArgs e)
+        {
+            UpdateProgressBar();
         }
 
         /* **********************************************************
@@ -237,19 +270,18 @@ namespace MonsterReminder.Sample
             // preventing single click event to be fired after this double click
             //e.Handled = true;
 
+            // Cancel Single click timer:
             timerSingleClick.Stop();
-
-            RegisterMonster();
-
             Debug.WriteLine($"{DateTime.Now}: Debug - Double Click Event");
 
-            timerProgressBar.Stop();
-            timerProgressBar.Start();
+            RegisterMonster();
         }
 
         private void MenuItem_Remove_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine($"{DateTime.Now}: Debug - Remove!!");
+
+            UnRegisteredMonster();
         }
 
         private void Button_Minimize_Click(object sender, RoutedEventArgs e)
@@ -265,8 +297,8 @@ namespace MonsterReminder.Sample
         private void ButtonStop_Click(object sender, RoutedEventArgs e)
         {
             player.controls.stop();
-            timerMonster.Stop();
-            timerProgressBar.Stop();
+
+            UnRegisteredMonster();
         }
 
         private void ButtonPlay_Click(object sender, RoutedEventArgs e)
