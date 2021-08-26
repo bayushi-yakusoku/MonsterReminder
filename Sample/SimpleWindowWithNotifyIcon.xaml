@@ -38,6 +38,15 @@
                                    Source="/Icons/Remove.png" />
                         </MenuItem.Icon>
                     </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="Quit Application"
+                              Click="ImageClose_MouseLeftButtonUp">
+                        <MenuItem.Icon>
+                            <Image Width="16"
+                                   Height="16"
+                                   Source="/Icons/Error.ico" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
@@ -58,15 +67,17 @@
             <StatusBarItem>
                 <TextBlock Text="Monster Reminder Configurator"/>
             </StatusBarItem>
+            
             <StatusBarItem Grid.Column="1">
-                <Button x:Name="Button_Minimize" 
-                        Content=" - "
-                        Click="Button_Minimize_Click" />
+                <Image Source="/Icons/Remove.png" 
+                       x:Name="imageMinimize"
+                       MouseLeftButtonUp="ImageMinimize_MouseLeftButtonUp" />
             </StatusBarItem>
+            
             <StatusBarItem Grid.Column="2">
-                <Button x:Name="Button_Close" 
-                        Content=" x "
-                        Click="Button_Close_Click"/>
+                <Image Source="/Icons/Error.ico" 
+                       x:Name="imageClose"
+                       MouseLeftButtonUp="ImageClose_MouseLeftButtonUp" />
             </StatusBarItem>
         </StatusBar>
 
@@ -105,6 +116,28 @@
                     Content="Stop" 
                     Click="ButtonStop_Click" />
 
+            <Grid d:ShowGridLines="True" 
+                  Grid.Column="0" Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="60" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox Grid.Column="0" Grid.Row="0"
+                         x:Name="textAudioFile"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Center"
+                         MaxWidth="150"
+                         Width="150"
+                         Text="..."/>
+
+                <Button Grid.Column="1" Grid.Row="0"
+                        x:Name="buttonSelectAudioFile" 
+                        Margin="10, 10, 10, 10"
+                        Content="File"
+                        Click="ButtonSelectAudioFile_Click"/>
+            </Grid>
+            
             <Grid d:ShowGridLines="True"
                   Grid.Column="0" Grid.Row="4">
 
@@ -115,7 +148,7 @@
 
                 <Label Grid.Column="0" Grid.Row="0"
                        VerticalAlignment="Center"
-                       Content="Reminder Duration" />
+                       Content="Reminder Duration (min)" />
 
                 <TextBox Grid.Column="1" Grid.Row="0" 
                          x:Name="monsterReminderDuration"
@@ -123,7 +156,7 @@
                          HorizontalContentAlignment="Right"
                          VerticalAlignment="Center"
                          HorizontalAlignment="Left"
-                         Text="30" />
+                         Text="5" />
             </Grid>
         </Grid>
 
@@ -132,9 +165,9 @@
                 <ItemsPanelTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="140" />
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                     </Grid>
                 </ItemsPanelTemplate>

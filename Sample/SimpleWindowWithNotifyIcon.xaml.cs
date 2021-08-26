@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Timers;
 using System.Windows;
 using Timer = System.Timers.Timer;
@@ -65,14 +67,14 @@ namespace MonsterReminder.Sample
 
         WMPLib.WindowsMediaPlayer player;
 
+        string audioFile;
+
         private void InitializeSoundPlayer()
         {
             player = new WMPLib.WindowsMediaPlayer();
 
             //player.URL = @"F:\Sons\Chansons\Various Artists\Chirac en prison.mp3";
-            player.URL = @"F:\Code\C#\MonsterReminder\Sounds\Abdos Par Vivi.3gp";
-            
-            player.controls.stop();
+            audioFile = @"F:\Code\C#\MonsterReminder\Sounds\Abdos Par Vivi.3gp";
         }
 
         /*
@@ -141,7 +143,7 @@ namespace MonsterReminder.Sample
             refTime = DateTime.Now;
             monsterInTheFridge = true;
             progressBarReminder.Value = 0;
-            
+
             if (WindowState != WindowState.Minimized)
                 timerProgressBar.Start();
 
@@ -151,7 +153,7 @@ namespace MonsterReminder.Sample
 
             try
             {
-                refDuration = 1000 * Convert.ToInt32(monsterReminderDuration.Text);
+                refDuration = 60000 * Convert.ToInt32(monsterReminderDuration.Text);
             }
             catch (Exception err)
             {
@@ -172,7 +174,7 @@ namespace MonsterReminder.Sample
         private void MonsterIsReadyToDrink()
         {
             Debug.WriteLine($"{DateTime.Now}: Debug - Ring!");
-            player.controls.play();
+            player.URL = audioFile;
 
             timerMonster.Stop();
             timerProgressBar.Stop();
@@ -213,7 +215,7 @@ namespace MonsterReminder.Sample
             if (percent > 100)
                 percent = 100;
 
-            return (int) percent;
+            return (int)percent;
         }
 
         private void UpdateProgressBar()
@@ -226,6 +228,17 @@ namespace MonsterReminder.Sample
             {
                 progressBarReminder.Value = progressValue;
             });
+        }
+
+        private void SelectAudioFile()
+        {
+            OpenFileDialog openFileDialog = new();
+
+            if (openFileDialog.ShowDialog() == true)
+                textAudioFile.Text = openFileDialog.FileName;
+
+            if (textAudioFile.Text != "")
+                audioFile = textAudioFile.Text;
         }
 
         /* **********************************************************
@@ -284,12 +297,7 @@ namespace MonsterReminder.Sample
             UnRegisteredMonster();
         }
 
-        private void Button_Minimize_Click(object sender, RoutedEventArgs e)
-        {
-            ToggleDisplay();
-        }
-
-        private void Button_Close_Click(object sender, RoutedEventArgs e)
+        private void ImageClose_MouseLeftButtonUp(object sender, RoutedEventArgs e)
         {
             Close();
         }
@@ -303,7 +311,17 @@ namespace MonsterReminder.Sample
 
         private void ButtonPlay_Click(object sender, RoutedEventArgs e)
         {
-            player.controls.play();
+            player.URL = audioFile;
+        }
+
+        private void ButtonSelectAudioFile_Click(object sender, RoutedEventArgs e)
+        {
+            SelectAudioFile();
+        }
+
+        private void ImageMinimize_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            ToggleDisplay();
         }
     }
 }
