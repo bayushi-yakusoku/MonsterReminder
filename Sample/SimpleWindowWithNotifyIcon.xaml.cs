@@ -87,7 +87,8 @@ namespace MonsterReminder.Sample
             //audioFile = @"F:\Sons\Chansons\Various Artists\Chirac en prison.mp3";
             //audioFile = @"F:\Code\C#\MonsterReminder\Sounds\Abdos Par Vivi.3gp";
 
-            textReminderAudioFile.Text = Path.Combine(pathSounds, "Abdos Par Vivi.3gp");
+            textRegisterAudioFile.Text = Path.Combine(pathSounds, "prepare_monster.3gp");
+            textReminderAudioFile.Text = Path.Combine(pathSounds, "chercher_monster.3gp");
         }
 
         /*
@@ -189,7 +190,6 @@ namespace MonsterReminder.Sample
         private void MonsterIsReadyToDrink()
         {
             Debug.WriteLine($"{DateTime.Now}: Debug - Ring!");
-            player.URL = textReminderAudioFile.Text;
 
             timerMonster.Stop();
             timerProgressBar.Stop();
@@ -199,6 +199,7 @@ namespace MonsterReminder.Sample
             {
                 progressBarReminder.Value = 100;
                 textRegisteredAt.Text = $"Ready To Drink!";
+                player.URL = textReminderAudioFile.Text;
             });
 
             MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
@@ -325,11 +326,6 @@ namespace MonsterReminder.Sample
             UnRegisteredMonster();
         }
 
-        private void ButtonPlay_Click(object sender, RoutedEventArgs e)
-        {
-            player.URL = textReminderAudioFile.Text;
-        }
-
         private void ButtonSelectReminderAudioFile_Click(object sender, RoutedEventArgs e)
         {
             textReminderAudioFile.Text = SelectAudioFile();
@@ -343,6 +339,16 @@ namespace MonsterReminder.Sample
         private void ButtonSelectRegisterAudioFile_Click(object sender, RoutedEventArgs e)
         {
             textRegisterAudioFile.Text = SelectAudioFile();
+        }
+
+        private void ImagePlayRegisterSound_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            player.URL = textRegisterAudioFile.Text;
+        }
+
+        private void ImagePlayReminderSound_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            player.URL = textReminderAudioFile.Text;
         }
     }
 }

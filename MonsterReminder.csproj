@@ -14,6 +14,7 @@
     <None Remove="Icons\MonsterLogo.ico" />
     <None Remove="Icons\MonsterLogo.png" />
     <None Remove="Icons\monsterlogo_EXn_icon.ico" />
+    <None Remove="Icons\Play.png" />
     <None Remove="Icons\redmonsterlogo.ico" />
     <None Remove="Icons\Remove.png" />
     <None Remove="Icons\violetmonsterlogo.ico" />
@@ -36,17 +37,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Icons\Add.png" />
+    <EmbeddedResource Include="Icons\Add.png" />
     <Resource Include="Icons\Error.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Icons\MonsterLogo.ico" />
+    <Resource Include="Icons\Play.png" />
     <Resource Include="Icons\redmonsterlogo.ico" />
     <Resource Include="Icons\Remove.png" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="Sounds\Abdos Par Vivi.3gp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Sounds\chercher_monster.3gp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Sounds\prepare_monster.3gp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
