@@ -37,10 +37,18 @@
 
   <ItemGroup>
     <Resource Include="Icons\Add.png" />
-    <Resource Include="Icons\Error.ico" />
+    <Resource Include="Icons\Error.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Icons\MonsterLogo.ico" />
     <Resource Include="Icons\redmonsterlogo.ico" />
     <Resource Include="Icons\Remove.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Sounds\Abdos Par Vivi.3gp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

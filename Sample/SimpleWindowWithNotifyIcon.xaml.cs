@@ -19,9 +19,14 @@ namespace MonsterReminder.Sample
         private Timer timerSingleClick;
         private Timer timerProgressBar;
 
+        private string pathSounds;
+        private string pathIcons;
+
         public SimpleWindowWithNotifyIcon()
         {
             InitializeComponent();
+
+            InitializePath();
 
             InitializeTimerMonster();
 
@@ -30,6 +35,12 @@ namespace MonsterReminder.Sample
             InitializeTimerProgressBar();
 
             InitializeSoundPlayer();
+        }
+
+        private void InitializePath()
+        {
+            pathSounds = Path.Combine(Environment.CurrentDirectory, @"Sounds\");
+            pathIcons  = Path.Combine(Environment.CurrentDirectory, @"Icons\");
         }
 
         private void InitializeTimerProgressBar()
@@ -67,14 +78,16 @@ namespace MonsterReminder.Sample
 
         WMPLib.WindowsMediaPlayer player;
 
-        string audioFile;
+        //string reminderAudioFile;
 
         private void InitializeSoundPlayer()
         {
             player = new WMPLib.WindowsMediaPlayer();
 
-            //player.URL = @"F:\Sons\Chansons\Various Artists\Chirac en prison.mp3";
-            audioFile = @"F:\Code\C#\MonsterReminder\Sounds\Abdos Par Vivi.3gp";
+            //audioFile = @"F:\Sons\Chansons\Various Artists\Chirac en prison.mp3";
+            //audioFile = @"F:\Code\C#\MonsterReminder\Sounds\Abdos Par Vivi.3gp";
+
+            textReminderAudioFile.Text = Path.Combine(pathSounds, "Abdos Par Vivi.3gp");
         }
 
         /*
@@ -142,6 +155,7 @@ namespace MonsterReminder.Sample
         {
             refTime = DateTime.Now;
             monsterInTheFridge = true;
+            player.URL = textRegisterAudioFile.Text;
             progressBarReminder.Value = 0;
 
             if (WindowState != WindowState.Minimized)
@@ -167,6 +181,7 @@ namespace MonsterReminder.Sample
             timerMonster.Start();
 
             MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\redmonsterlogo.ico");
+            //MyNotifyIcon.Icon = new Icon(Path.Combine(pathIcons, "redmonsterlogo.ico"));
 
             Debug.WriteLine($"{DateTime.Now}: Debug - Monster registered, reminder in {monsterReminderDuration.Text} second(s)");
         }
@@ -174,7 +189,7 @@ namespace MonsterReminder.Sample
         private void MonsterIsReadyToDrink()
         {
             Debug.WriteLine($"{DateTime.Now}: Debug - Ring!");
-            player.URL = audioFile;
+            player.URL = textReminderAudioFile.Text;
 
             timerMonster.Stop();
             timerProgressBar.Stop();
@@ -187,6 +202,7 @@ namespace MonsterReminder.Sample
             });
 
             MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
+            //MyNotifyIcon.Icon = new Icon(Path.Combine(pathIcons, "MonsterLogo.ico"));
         }
 
         private void UnRegisteredMonster()
@@ -202,6 +218,7 @@ namespace MonsterReminder.Sample
             });
 
             MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
+            //MyNotifyIcon.Icon = new Icon(Path.Combine(pathIcons, "MonsterLogo.ico"));
         }
 
         private int CalculateProgressValue()
@@ -230,15 +247,14 @@ namespace MonsterReminder.Sample
             });
         }
 
-        private void SelectAudioFile()
+        private string SelectAudioFile()
         {
             OpenFileDialog openFileDialog = new();
 
             if (openFileDialog.ShowDialog() == true)
-                textAudioFile.Text = openFileDialog.FileName;
+                return openFileDialog.FileName;
 
-            if (textAudioFile.Text != "")
-                audioFile = textAudioFile.Text;
+            return "";
         }
 
         /* **********************************************************
@@ -311,17 +327,22 @@ namespace MonsterReminder.Sample
 
         private void ButtonPlay_Click(object sender, RoutedEventArgs e)
         {
-            player.URL = audioFile;
+            player.URL = textReminderAudioFile.Text;
         }
 
-        private void ButtonSelectAudioFile_Click(object sender, RoutedEventArgs e)
+        private void ButtonSelectReminderAudioFile_Click(object sender, RoutedEventArgs e)
         {
-            SelectAudioFile();
+            textReminderAudioFile.Text = SelectAudioFile();
         }
 
         private void ImageMinimize_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             ToggleDisplay();
+        }
+
+        private void ButtonSelectRegisterAudioFile_Click(object sender, RoutedEventArgs e)
+        {
+            textRegisterAudioFile.Text = SelectAudioFile();
         }
     }
 }

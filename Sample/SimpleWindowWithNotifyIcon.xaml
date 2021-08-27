@@ -119,27 +119,49 @@
             <Grid d:ShowGridLines="True" 
                   Grid.Column="0" Grid.Row="3">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="60" />
                 </Grid.ColumnDefinitions>
 
-                <TextBox Grid.Column="0" Grid.Row="0"
-                         x:Name="textAudioFile"
+                <Button Grid.Column="0" Grid.Row="0"
+                        x:Name="buttonSelectRegisterAudioFile" 
+                        Margin="10, 10, 10, 10"
+                        Content="Register"
+                        Click="ButtonSelectRegisterAudioFile_Click"/>
+
+                <TextBox Grid.Column="1" Grid.Row="0"
+                         x:Name="textRegisterAudioFile"
                          VerticalAlignment="Center"
                          HorizontalAlignment="Center"
                          MaxWidth="150"
                          Width="150"
                          Text="..."/>
+            </Grid>
+            
+            <Grid d:ShowGridLines="True" 
+                  Grid.Column="0" Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="1" Grid.Row="0"
-                        x:Name="buttonSelectAudioFile" 
+                <Button Grid.Column="0" Grid.Row="0"
+                        x:Name="buttonSelectReminderAudioFile" 
                         Margin="10, 10, 10, 10"
-                        Content="File"
-                        Click="ButtonSelectAudioFile_Click"/>
+                        Content="Reminder"
+                        Click="ButtonSelectReminderAudioFile_Click"/>
+                
+                <TextBox Grid.Column="1" Grid.Row="0"
+                         x:Name="textReminderAudioFile"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Center"
+                         MaxWidth="150"
+                         Width="150"
+                         Text="..."/>
             </Grid>
             
             <Grid d:ShowGridLines="True"
-                  Grid.Column="0" Grid.Row="4">
+                  Grid.Column="0" Grid.Row="5">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
