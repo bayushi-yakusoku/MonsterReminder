@@ -4,12 +4,20 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Text.Json;
 using System.Timers;
 using System.Windows;
 using Timer = System.Timers.Timer;
 
 namespace MonsterReminder.Sample
 {
+    public class Configuration
+    {
+        public DateTimeOffset Date { get; set; }
+        public string PathSounds { get; set; }
+    }
+    
+    
     /// <summary>
     /// Interaction logic for SimpleWindowWithNotifyIcon.xaml
     /// </summary>
@@ -35,7 +43,11 @@ namespace MonsterReminder.Sample
             InitializeTimerProgressBar();
 
             InitializeSoundPlayer();
+
+            pouf = Properties.Resources.ResourceKeyTest;
         }
+
+        string pouf;
 
         private void InitializePath()
         {
@@ -143,6 +155,8 @@ namespace MonsterReminder.Sample
                 Rect desktopWorkingArea = SystemParameters.WorkArea;
                 int margin = 10;
 
+                Show();
+
                 Left = desktopWorkingArea.Right - (Width + margin);
                 Top = desktopWorkingArea.Bottom - (Height + margin);
             });
@@ -182,6 +196,7 @@ namespace MonsterReminder.Sample
             timerMonster.Start();
 
             MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\redmonsterlogo.ico");
+            //MyNotifyIcon.Icon = new Icon("/Icons/redmonsterlogo.ico");
             //MyNotifyIcon.Icon = new Icon(Path.Combine(pathIcons, "redmonsterlogo.ico"));
 
             Debug.WriteLine($"{DateTime.Now}: Debug - Monster registered, reminder in {monsterReminderDuration.Text} second(s)");
@@ -349,6 +364,25 @@ namespace MonsterReminder.Sample
         private void ImagePlayReminderSound_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             player.URL = textReminderAudioFile.Text;
+        }
+
+        private void ButtonTest_Click(object sender, RoutedEventArgs e)
+        {
+            Configuration myConfig = new Configuration
+            {
+                Date = DateTime.Now,
+                PathSounds = "toto"
+            };
+
+
+            JsonSerializerOptions options = new JsonSerializerOptions { WriteIndented = true };
+            string jsonString = JsonSerializer.Serialize(myConfig, options);
+
+            string fileName = @"F:\Code\C#\MonsterReminder\bin\Debug\configuration.json";
+            File.WriteAllText(fileName, jsonString);
+
+            Debug.WriteLine($"pouf: {pouf}");
+            Debug.WriteLine($"Configuration: {jsonString}");
         }
     }
 }

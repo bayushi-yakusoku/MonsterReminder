@@ -13,5 +13,14 @@ namespace MonsterReminder
     /// </summary>
     public partial class App : Application
     {
+        App()
+        {
+            /*
+             * Following tuto:
+             * https://www.tutorialspoint.com/wpf/wpf_localization.htm
+             */
+            //System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US"); 
+            //System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("fr");
+        }
     }
 }

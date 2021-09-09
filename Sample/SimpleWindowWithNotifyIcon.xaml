@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MonsterReminder.Sample"
+        xmlns:my="clr-namespace:MonsterReminder.Properties"
         xmlns:tb="http://www.hardcodet.net/taskbar" 
         mc:Ignorable="d" 
         Title="SimpleWindowWithNotifyIcon" 
@@ -11,6 +12,8 @@
         Width="Auto"
         SizeToContent="WidthAndHeight"
         WindowState="Minimized"
+        Visibility="Hidden"
+        d:Visibility="Visible"
         ShowInTaskbar="False" 
         ResizeMode="NoResize" 
         Icon="/Icons/MonsterLogo.ico" 
@@ -20,7 +23,7 @@
 
         <tb:TaskbarIcon x:Name="MyNotifyIcon" 
                         IconSource="/Icons/MonsterLogo.ico" 
-                        ToolTipText="Monster Reminder" 
+                        ToolTipText="{x:Static my:Resources.TrayIconToolTip}" 
                         
                         TrayLeftMouseUp="MyNotifyIcon_LeftClick"
                         TrayRightMouseUp="MyNotifyIcon_RightClick"
@@ -30,7 +33,7 @@
             <!-- the data context of the context menu is the NotifyIcon itself (see more about this in DataBinding samples) -->
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Remove Current Reminder"
+                    <MenuItem Header="{x:Static my:Resources.CtxMenuRemove}"
                               Click="MenuItem_Remove_Click">
                         <MenuItem.Icon>
                             <Image Width="16"
@@ -39,7 +42,7 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <Separator/>
-                    <MenuItem Header="Quit Application"
+                    <MenuItem Header="{x:Static my:Resources.CtxMenuQuit}"
                               Click="ImageClose_MouseLeftButtonUp">
                         <MenuItem.Icon>
                             <Image Width="16"
@@ -65,7 +68,7 @@
             </StatusBar.ItemsPanel>
 
             <StatusBarItem>
-                <TextBlock Text="Monster Reminder Configurator"/>
+                <TextBlock Text="{x:Static my:Resources.WindowTitle}"/>
             </StatusBarItem>
             
             <StatusBarItem Grid.Column="1">
@@ -101,13 +104,18 @@
                        HorizontalAlignment="Center"
                        FontWeight="Bold"
                        TextWrapping="Wrap"
-                       Text="You should see an icon in the tray." />
+                       Text="{x:Static my:Resources.HeaderTitle}" />
 
             <Button Grid.Column="0" Grid.Row="1"
                     x:Name="ButtonStop" 
                     Margin="10, 10, 10, 10"
-                    Content="Remove Current Reminder" 
+                    Content="{x:Static my:Resources.ButtonStopReminder}" 
                     Click="ButtonStop_Click" />
+
+            <Button Grid.Column="0" Grid.Row="2"
+                    Margin="10, 10, 10, 10"
+                    Content="{x:Static my:Resources.ButtonTestContent}"
+                    Click="ButtonTest_Click" />
 
             <Grid d:ShowGridLines="True" 
                   Grid.Column="0" Grid.Row="3">
@@ -124,7 +132,7 @@
                 <Button Grid.Column="0" Grid.Row="0"
                         x:Name="buttonSelectRegisterAudioFile" 
                         Margin="10, 10, 10, 10"
-                        Content="Register"
+                        Content="{x:Static my:Resources.ButtonRegisterContent}"
                         Click="ButtonSelectRegisterAudioFile_Click"/>
 
                 <Image Grid.Column="1" Grid.Row="0" 
@@ -142,7 +150,7 @@
                 <Button Grid.Column="0" Grid.Row="1"
                         x:Name="buttonSelectReminderAudioFile" 
                         Margin="10, 10, 10, 10"
-                        Content="Reminder"
+                        Content="{x:Static my:Resources.ButtonReminderContent}"
                         Click="ButtonSelectReminderAudioFile_Click"/>
 
                 <Image Grid.Column="1" Grid.Row="1" 
@@ -168,7 +176,7 @@
 
                 <Label Grid.Column="0" Grid.Row="0"
                        VerticalAlignment="Center"
-                       Content="Reminder Duration (min)" />
+                       Content="{x:Static my:Resources.LabelFieldReminderDuration}" />
 
                 <TextBox Grid.Column="1" Grid.Row="0" 
                          x:Name="monsterReminderDuration"
@@ -176,7 +184,7 @@
                          HorizontalContentAlignment="Right"
                          VerticalAlignment="Center"
                          HorizontalAlignment="Left"
-                         Text="1" />
+                         Text="10" />
             </Grid>
         </Grid>
 
@@ -194,7 +202,7 @@
             </StatusBar.ItemsPanel>
             <StatusBarItem Grid.Column="0">
                 <TextBlock x:Name="textRegisteredAt" 
-                           Text="Nothing To Drink..." />
+                           Text="{x:Static my:Resources.StatusBarTextNoReminder}" />
             </StatusBarItem>
             <Separator Grid.Column="1" />
             <StatusBarItem Grid.Column="2">
