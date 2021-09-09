@@ -13,8 +13,11 @@ namespace MonsterReminder.Sample
 {
     public class Configuration
     {
-        public DateTimeOffset Date { get; set; }
-        public string PathSounds { get; set; }
+        public DateTimeOffset LastUpdate { get; set; }
+
+        public string ReminderDuration { get; set; }
+        public string ReminderSound { get; set; }
+        public string RegisterSound { get; set; }
     }
     
     
@@ -30,11 +33,15 @@ namespace MonsterReminder.Sample
         private string pathSounds;
         private string pathIcons;
 
+        private string configurationFile;
+
         public SimpleWindowWithNotifyIcon()
         {
             InitializeComponent();
 
             InitializePath();
+
+            InitializeConfiguration();
 
             InitializeTimerMonster();
 
@@ -45,6 +52,50 @@ namespace MonsterReminder.Sample
             InitializeSoundPlayer();
 
             pouf = Properties.Resources.ResourceKeyTest;
+        }
+
+        private void InitializeConfiguration()
+        {
+            string fileName = "configuration.json";
+
+            configurationFile = Path.Combine(AppContext.BaseDirectory, "..", fileName);
+
+            if (File.Exists(configurationFile))
+            {
+                Debug.WriteLine($"Configuration File exists!: {configurationFile}");
+                UploadConfiguration();
+            }
+        }
+
+        Configuration configuration = new();
+
+        void UploadConfiguration()
+        {
+            string jsonString = File.ReadAllText(configurationFile);
+
+            configuration = JsonSerializer.Deserialize<Configuration>(jsonString);
+
+            if (configuration.ReminderDuration != null)
+                monsterReminderDuration.Text = configuration.ReminderDuration;
+
+            if (configuration.RegisterSound != null)
+                textRegisterAudioFile.Text = configuration.RegisterSound;
+
+            if (configuration.ReminderSound != null)
+                textReminderAudioFile.Text = configuration.ReminderSound;
+        }
+
+        void SaveConfiguration()
+        {
+            configuration.LastUpdate = DateTime.Now;
+            configuration.ReminderDuration = monsterReminderDuration.Text;
+            configuration.RegisterSound = textRegisterAudioFile.Text;
+            configuration.ReminderSound = textReminderAudioFile.Text;
+
+            JsonSerializerOptions options = new() { WriteIndented = true };
+            string jsonString = JsonSerializer.Serialize(configuration, options);
+
+            File.WriteAllText(configurationFile, jsonString);
         }
 
         string pouf;
@@ -99,8 +150,8 @@ namespace MonsterReminder.Sample
             //audioFile = @"F:\Sons\Chansons\Various Artists\Chirac en prison.mp3";
             //audioFile = @"F:\Code\C#\MonsterReminder\Sounds\Abdos Par Vivi.3gp";
 
-            textRegisterAudioFile.Text = Path.Combine(pathSounds, "prepare_monster.3gp");
-            textReminderAudioFile.Text = Path.Combine(pathSounds, "chercher_monster.3gp");
+            //textRegisterAudioFile.Text = Path.Combine(pathSounds, "prepare_monster.3gp");
+            //textReminderAudioFile.Text = Path.Combine(pathSounds, "chercher_monster.3gp");
         }
 
         /*
@@ -331,6 +382,7 @@ namespace MonsterReminder.Sample
 
         private void ImageClose_MouseLeftButtonUp(object sender, RoutedEventArgs e)
         {
+            SaveConfiguration();
             Close();
         }
 
@@ -348,6 +400,7 @@ namespace MonsterReminder.Sample
 
         private void ImageMinimize_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            SaveConfiguration();
             ToggleDisplay();
         }
 
@@ -368,21 +421,9 @@ namespace MonsterReminder.Sample
 
         private void ButtonTest_Click(object sender, RoutedEventArgs e)
         {
-            Configuration myConfig = new Configuration
-            {
-                Date = DateTime.Now,
-                PathSounds = "toto"
-            };
-
-
-            JsonSerializerOptions options = new JsonSerializerOptions { WriteIndented = true };
-            string jsonString = JsonSerializer.Serialize(myConfig, options);
-
-            string fileName = @"F:\Code\C#\MonsterReminder\bin\Debug\configuration.json";
-            File.WriteAllText(fileName, jsonString);
-
+            Debug.WriteLine("---------------------------------");
             Debug.WriteLine($"pouf: {pouf}");
-            Debug.WriteLine($"Configuration: {jsonString}");
         }
+
     }
 }

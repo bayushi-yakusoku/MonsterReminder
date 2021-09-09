@@ -184,7 +184,7 @@
                          HorizontalContentAlignment="Right"
                          VerticalAlignment="Center"
                          HorizontalAlignment="Left"
-                         Text="10" />
+                         Text="1" />
             </Grid>
         </Grid>
 
