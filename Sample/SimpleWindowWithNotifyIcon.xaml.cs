@@ -35,6 +35,8 @@ namespace MonsterReminder.Sample
 
         private string configurationFile;
 
+        private SingleOne SingleOne;
+
         public SimpleWindowWithNotifyIcon()
         {
             InitializeComponent();
@@ -52,6 +54,10 @@ namespace MonsterReminder.Sample
             InitializeSoundPlayer();
 
             pouf = Properties.Resources.ResourceKeyTest;
+
+            SingleOne = SingleOne.Instance;
+
+            SingleOne.Name = "toto";
         }
 
         private void InitializeConfiguration()
@@ -423,6 +429,14 @@ namespace MonsterReminder.Sample
         {
             Debug.WriteLine("---------------------------------");
             Debug.WriteLine($"pouf: {pouf}");
+
+            ListSounds listSounds = new ();
+            listSounds.Show();
+
+            int margin = 10;
+
+            listSounds.Top = Top - (listSounds.Height - Height) - margin;
+            listSounds.Left = Left - (listSounds.Width - Width) - margin;
         }
 
     }
