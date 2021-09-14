@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,15 +20,20 @@ namespace MonsterReminder.Sample
     /// </summary>
     public partial class ListSounds : Window
     {
-        SingleOne SingleOne;
+        MonsterController MonsterController;
 
         public ListSounds()
         {
             InitializeComponent();
 
-            SingleOne = SingleOne.Instance;
+            MonsterController = MonsterController.Instance;
 
-            TextBoxTest.Text = SingleOne.Name;
+            JsonSerializerOptions options = new()
+            {
+                WriteIndented = true
+            };
+
+            TextBoxTest.Text = JsonSerializer.Serialize(MonsterController.Configuration);
         }
     }
 }

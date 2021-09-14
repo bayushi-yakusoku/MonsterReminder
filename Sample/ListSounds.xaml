@@ -9,6 +9,6 @@
     <Grid>
         <TextBox Grid.Row="0" Grid.Column="0"
                  x:Name="TextBoxTest" 
-                 d:Text="test"/>
+                 d:Text="design sample text"/>
     </Grid>
 </Window>

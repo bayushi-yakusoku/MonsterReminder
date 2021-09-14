@@ -151,6 +151,24 @@ namespace MonsterReminder.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ready To Drink!!.
+        /// </summary>
+        public static string StatusBarTextReadyToDrink {
+            get {
+                return ResourceManager.GetString("StatusBarTextReadyToDrink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Registered at.
+        /// </summary>
+        public static string StatusBarTextRegisteredAt {
+            get {
+                return ResourceManager.GetString("StatusBarTextRegisteredAt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Monster Reminder.
         /// </summary>
         public static string TrayIconToolTip {

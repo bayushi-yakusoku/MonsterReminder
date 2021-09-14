@@ -11,31 +11,19 @@ using Timer = System.Timers.Timer;
 
 namespace MonsterReminder.Sample
 {
-    public class Configuration
-    {
-        public DateTimeOffset LastUpdate { get; set; }
-
-        public string ReminderDuration { get; set; }
-        public string ReminderSound { get; set; }
-        public string RegisterSound { get; set; }
-    }
-    
-    
     /// <summary>
     /// Interaction logic for SimpleWindowWithNotifyIcon.xaml
     /// </summary>
     public partial class SimpleWindowWithNotifyIcon : Window
     {
-        private Timer timerMonster;
+        //private Timer timerMonster;
         private Timer timerSingleClick;
-        private Timer timerProgressBar;
+        private Timer timerRefreshScreen;
 
-        private string pathSounds;
-        private string pathIcons;
+        //private string pathSounds;
+        //private string pathIcons;
 
-        private string configurationFile;
-
-        private SingleOne SingleOne;
+        private readonly MonsterController MonsterController;
 
         public SimpleWindowWithNotifyIcon()
         {
@@ -43,95 +31,42 @@ namespace MonsterReminder.Sample
 
             InitializePath();
 
-            InitializeConfiguration();
+            //InitializeConfiguration();
 
-            InitializeTimerMonster();
+            //InitializeTimerMonster();
 
             InitializeTimerSingleClick();
 
-            InitializeTimerProgressBar();
+            InitializeTimerRefreshScreen();
 
-            InitializeSoundPlayer();
+            //InitializeSoundPlayer();
 
             pouf = Properties.Resources.ResourceKeyTest;
 
-            SingleOne = SingleOne.Instance;
+            MonsterController = MonsterController.Instance;
 
-            SingleOne.Name = "toto";
-        }
+            MonsterController.timeToDrink = ReadyToDrink;
 
-        private void InitializeConfiguration()
-        {
-            string fileName = "configuration.json";
-
-            configurationFile = Path.Combine(AppContext.BaseDirectory, "..", fileName);
-
-            if (File.Exists(configurationFile))
-            {
-                Debug.WriteLine($"Configuration File exists!: {configurationFile}");
-                UploadConfiguration();
-            }
-        }
-
-        Configuration configuration = new();
-
-        void UploadConfiguration()
-        {
-            string jsonString = File.ReadAllText(configurationFile);
-
-            configuration = JsonSerializer.Deserialize<Configuration>(jsonString);
-
-            if (configuration.ReminderDuration != null)
-                monsterReminderDuration.Text = configuration.ReminderDuration;
-
-            if (configuration.RegisterSound != null)
-                textRegisterAudioFile.Text = configuration.RegisterSound;
-
-            if (configuration.ReminderSound != null)
-                textReminderAudioFile.Text = configuration.ReminderSound;
-        }
-
-        void SaveConfiguration()
-        {
-            configuration.LastUpdate = DateTime.Now;
-            configuration.ReminderDuration = monsterReminderDuration.Text;
-            configuration.RegisterSound = textRegisterAudioFile.Text;
-            configuration.ReminderSound = textReminderAudioFile.Text;
-
-            JsonSerializerOptions options = new() { WriteIndented = true };
-            string jsonString = JsonSerializer.Serialize(configuration, options);
-
-            File.WriteAllText(configurationFile, jsonString);
+            UpdateScreenFields();
         }
 
         string pouf;
 
         private void InitializePath()
         {
-            pathSounds = Path.Combine(Environment.CurrentDirectory, @"Sounds\");
-            pathIcons  = Path.Combine(Environment.CurrentDirectory, @"Icons\");
+            //pathSounds = Path.Combine(Environment.CurrentDirectory, @"Sounds\");
+            //pathIcons  = Path.Combine(Environment.CurrentDirectory, @"Icons\");
         }
 
-        private void InitializeTimerProgressBar()
+        private void InitializeTimerRefreshScreen()
         {
-            timerProgressBar = new Timer
+            timerRefreshScreen = new Timer
             {
                 Interval = 1000,
                 AutoReset = true
             };
 
-            timerProgressBar.Elapsed += Elapsed_TimerProgressBar;
-        }
-
-        private void InitializeTimerMonster()
-        {
-            timerMonster = new Timer
-            {
-                Interval = 60000,
-                AutoReset = false
-            };
-
-            timerMonster.Elapsed += Elapsed_TimerMonster;
+            timerRefreshScreen.Elapsed += Elapsed_TimerRefreshScreen;
         }
 
         private void InitializeTimerSingleClick()
@@ -143,21 +78,6 @@ namespace MonsterReminder.Sample
             };
 
             timerSingleClick.Elapsed += Elapsed_TimerSingleClick;
-        }
-
-        WMPLib.WindowsMediaPlayer player;
-
-        //string reminderAudioFile;
-
-        private void InitializeSoundPlayer()
-        {
-            player = new WMPLib.WindowsMediaPlayer();
-
-            //audioFile = @"F:\Sons\Chansons\Various Artists\Chirac en prison.mp3";
-            //audioFile = @"F:\Code\C#\MonsterReminder\Sounds\Abdos Par Vivi.3gp";
-
-            //textRegisterAudioFile.Text = Path.Combine(pathSounds, "prepare_monster.3gp");
-            //textReminderAudioFile.Text = Path.Combine(pathSounds, "chercher_monster.3gp");
         }
 
         /*
@@ -182,142 +102,47 @@ namespace MonsterReminder.Sample
 
         private void ToggleDisplay()
         {
-            /*
-             * Will be executed from a thread different from the UI Element owner:
-             * https://stackoverflow.com/questions/9732709/the-calling-thread-cannot-access-this-object-because-a-different-thread-owns-it
-             *
-             */
-            Dispatcher.Invoke(() =>
-            {
-                if (WindowState != WindowState.Minimized)
-                {
-                    WindowState = WindowState.Minimized;
-                    ShowInTaskbar = false;
-
-                    timerProgressBar.Stop();
-
-                    return;
-                }
-
-                if (monsterInTheFridge)
-                {
-                    UpdateProgressBar();
-                    timerProgressBar.Start();
-                }
-
-                WindowState = WindowState.Normal;
-                ShowInTaskbar = true;
-                Topmost = true;
-
-                Rect desktopWorkingArea = SystemParameters.WorkArea;
-                int margin = 10;
-
-                Show();
-
-                Left = desktopWorkingArea.Right - (Width + margin);
-                Top = desktopWorkingArea.Bottom - (Height + margin);
-            });
-        }
-
-        DateTime refTime;
-        int refDuration;
-        bool monsterInTheFridge = false;
-
-        private void RegisterMonster()
-        {
-            refTime = DateTime.Now;
-            monsterInTheFridge = true;
-            player.URL = textRegisterAudioFile.Text;
-            progressBarReminder.Value = 0;
-
             if (WindowState != WindowState.Minimized)
-                timerProgressBar.Start();
-
-            string formatedRefTime = string.Format("{0:T}", refTime);
-
-            textRegisteredAt.Text = $"Registered at {formatedRefTime}";
-
-            try
             {
-                refDuration = 60000 * Convert.ToInt32(monsterReminderDuration.Text);
-            }
-            catch (Exception err)
-            {
-                Debug.WriteLine($"{DateTime.Now}: {err.Message}");
+                WindowState = WindowState.Minimized;
+                ShowInTaskbar = false;
 
-                throw;
+                timerRefreshScreen.Stop();
+
+                return;
             }
 
-            timerMonster.Stop();
-            timerMonster.Interval = refDuration;
-            timerMonster.Start();
+            UpdateScreenFields();
+            
+            timerRefreshScreen.Start();
 
-            MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\redmonsterlogo.ico");
-            //MyNotifyIcon.Icon = new Icon("/Icons/redmonsterlogo.ico");
-            //MyNotifyIcon.Icon = new Icon(Path.Combine(pathIcons, "redmonsterlogo.ico"));
+            WindowState = WindowState.Normal;
+            ShowInTaskbar = true;
+            Topmost = true;
 
-            Debug.WriteLine($"{DateTime.Now}: Debug - Monster registered, reminder in {monsterReminderDuration.Text} second(s)");
-        }
+            Rect desktopWorkingArea = SystemParameters.WorkArea;
+            int margin = 10;
 
-        private void MonsterIsReadyToDrink()
-        {
-            Debug.WriteLine($"{DateTime.Now}: Debug - Ring!");
+            Show();
 
-            timerMonster.Stop();
-            timerProgressBar.Stop();
-            monsterInTheFridge = false;
+            Left = desktopWorkingArea.Right - (Width + margin);
+            Top = desktopWorkingArea.Bottom - (Height + margin);
 
-            Dispatcher.Invoke(() =>
-            {
-                progressBarReminder.Value = 100;
-                textRegisteredAt.Text = $"Ready To Drink!";
-                player.URL = textReminderAudioFile.Text;
-            });
-
-            MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
-            //MyNotifyIcon.Icon = new Icon(Path.Combine(pathIcons, "MonsterLogo.ico"));
-        }
-
-        private void UnRegisteredMonster()
-        {
-            monsterInTheFridge = false;
-            timerMonster.Stop();
-            timerProgressBar.Stop();
-
-            Dispatcher.Invoke(() =>
-            {
-                progressBarReminder.Value = 0;
-                textRegisteredAt.Text = $"Nothing To Drink!";
-            });
-
-            MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
-            //MyNotifyIcon.Icon = new Icon(Path.Combine(pathIcons, "MonsterLogo.ico"));
-        }
-
-        private int CalculateProgressValue()
-        {
-            DateTime currentTime = DateTime.Now;
-
-            double msPassed = (currentTime - refTime).TotalMilliseconds;
-
-            double percent = (msPassed / refDuration) * 100;
-
-            if (percent > 100)
-                percent = 100;
-
-            return (int)percent;
         }
 
         private void UpdateProgressBar()
         {
-            int progressValue = CalculateProgressValue();
-
-            Debug.WriteLine($"{DateTime.Now}: Debug - Progress: {progressValue}%");
-
-            Dispatcher.Invoke(() =>
+            if (MonsterController.MonsterInTheFridge)
             {
-                progressBarReminder.Value = progressValue;
-            });
+                int progressValue = MonsterController.CalculateProgressValue();
+
+                Debug.WriteLine($"{DateTime.Now}: Debug - Progress: {progressValue}%");
+
+                Dispatcher.Invoke(() =>
+                {
+                    progressBarReminder.Value = progressValue;
+                });
+            }
         }
 
         private string SelectAudioFile()
@@ -330,6 +155,51 @@ namespace MonsterReminder.Sample
             return "";
         }
 
+        private void UpdateScreenFields()
+        {
+            if (MonsterController.Configuration.ReminderDuration != null)
+                monsterReminderDuration.Text = MonsterController.Configuration.ReminderDuration;
+
+            if (MonsterController.Configuration.RegisterSound != null)
+                textRegisterAudioFile.Text = MonsterController.Configuration.RegisterSound;
+
+            if (MonsterController.Configuration.ReminderSound != null)
+                textReminderAudioFile.Text = MonsterController.Configuration.ReminderSound;
+        }
+
+        private void UpdateConfiguration()
+        {
+            MonsterController.Configuration.ReminderDuration = monsterReminderDuration.Text;
+            MonsterController.Configuration.RegisterSound = textRegisterAudioFile.Text;
+            MonsterController.Configuration.ReminderSound = textReminderAudioFile.Text;
+        }
+
+        private void RegisterMonster()
+        {
+            MonsterController.RegisterMonster();
+            MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\redmonsterlogo.ico");
+
+            string formatedRefTime = string.Format("{0:T}", MonsterController.RefTime);
+            textRegisteredAt.Text = $"{Properties.Resources.StatusBarTextRegisteredAt} {formatedRefTime}";
+        }
+
+        private void UnregisterMonster()
+        {
+            MonsterController.UnRegisteredMonster();
+            MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
+            textRegisteredAt.Text = Properties.Resources.StatusBarTextNoReminder;
+        }
+
+        private void ReadyToDrink()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                Debug.WriteLine($"Delegate TimeToDrink!!!");
+                textRegisteredAt.Text = Properties.Resources.StatusBarTextReadyToDrink;
+                MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
+            });
+        }
+
         /* **********************************************************
          *  ELAPSED
          * ********************************************************** */
@@ -337,15 +207,18 @@ namespace MonsterReminder.Sample
         {
             Debug.WriteLine($"{DateTime.Now}: Debug - Single Click Event!");
 
-            ToggleDisplay();
+            /*
+             * Will be executed from a thread different from the UI Element owner:
+             * https://stackoverflow.com/questions/9732709/the-calling-thread-cannot-access-this-object-because-a-different-thread-owns-it
+             *
+             */
+            Dispatcher.Invoke(() =>
+            {
+                ToggleDisplay();
+            });
         }
 
-        private void Elapsed_TimerMonster(object sender, ElapsedEventArgs e)
-        {
-            MonsterIsReadyToDrink();
-        }
-
-        private void Elapsed_TimerProgressBar(object sender, ElapsedEventArgs e)
+        private void Elapsed_TimerRefreshScreen(object sender, ElapsedEventArgs e)
         {
             UpdateProgressBar();
         }
@@ -381,48 +254,51 @@ namespace MonsterReminder.Sample
 
         private void MenuItem_Remove_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine($"{DateTime.Now}: Debug - Remove!!");
-
-            UnRegisteredMonster();
+            UnregisterMonster();
         }
 
         private void ImageClose_MouseLeftButtonUp(object sender, RoutedEventArgs e)
         {
-            SaveConfiguration();
+            UpdateConfiguration();
+            MonsterController.SaveConfiguration();
             Close();
         }
 
         private void ButtonStop_Click(object sender, RoutedEventArgs e)
         {
-            player.controls.stop();
-
-            UnRegisteredMonster();
+            UnregisterMonster();
         }
 
         private void ButtonSelectReminderAudioFile_Click(object sender, RoutedEventArgs e)
         {
             textReminderAudioFile.Text = SelectAudioFile();
+            MonsterController.Configuration.ReminderSound = textReminderAudioFile.Text;
         }
 
         private void ImageMinimize_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            SaveConfiguration();
+            UpdateConfiguration();
+            MonsterController.SaveConfiguration();
             ToggleDisplay();
         }
 
         private void ButtonSelectRegisterAudioFile_Click(object sender, RoutedEventArgs e)
         {
+
             textRegisterAudioFile.Text = SelectAudioFile();
+            MonsterController.Configuration.RegisterSound = textRegisterAudioFile.Text;
         }
 
         private void ImagePlayRegisterSound_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            player.URL = textRegisterAudioFile.Text;
+            //player.URL = textRegisterAudioFile.Text;
+            MonsterController.player.URL = textRegisterAudioFile.Text;
         }
 
         private void ImagePlayReminderSound_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            player.URL = textReminderAudioFile.Text;
+            //player.URL = textReminderAudioFile.Text;
+            MonsterController.player.URL = textReminderAudioFile.Text;
         }
 
         private void ButtonTest_Click(object sender, RoutedEventArgs e)
@@ -430,7 +306,7 @@ namespace MonsterReminder.Sample
             Debug.WriteLine("---------------------------------");
             Debug.WriteLine($"pouf: {pouf}");
 
-            ListSounds listSounds = new ();
+            ListSounds listSounds = new();
             listSounds.Show();
 
             int margin = 10;

@@ -148,6 +148,12 @@
   <data name="StatusBarTextNoReminder" xml:space="preserve">
     <value>Nothing To Drink...</value>
   </data>
+  <data name="StatusBarTextReadyToDrink" xml:space="preserve">
+    <value>Ready To Drink!!</value>
+  </data>
+  <data name="StatusBarTextRegisteredAt" xml:space="preserve">
+    <value>Registered at</value>
+  </data>
   <data name="TrayIconToolTip" xml:space="preserve">
     <value>Monster Reminder</value>
   </data>
