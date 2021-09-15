@@ -27,6 +27,7 @@ namespace MonsterReminder.Sample
         {
 #if DEBUG
             Debug.WriteLine("Private Constructor!");
+            Console.WriteLine("xxxxx");
 #endif
 
             player = new WMPLib.WindowsMediaPlayer();
