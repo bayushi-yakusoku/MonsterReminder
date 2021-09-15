@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Timers;
 
 
@@ -22,24 +18,33 @@ namespace MonsterReminder.Sample
 
     class MonsterController
     {
+        /*
+         * Lazy Singleton
+         */
         private static readonly Lazy<MonsterController> lazy = new(() => new());
         public static MonsterController Instance => lazy.Value;
         private MonsterController()
         {
 #if DEBUG
-            Debug.WriteLine("private constructor!");
+            Debug.WriteLine("Private Constructor!");
 #endif
 
             player = new WMPLib.WindowsMediaPlayer();
 
             InitializeConfiguration();
-            //InitializeSoundPlayer();
             InitializeTimerMonster();
             UploadConfiguration();
         }
 
-        private string configurationFile;
         public Configuration Configuration { get; private set; }
+        public DateTime RefTime { get; private set; }
+        public bool MonsterInTheFridge { get; private set; }
+        public readonly WMPLib.WindowsMediaPlayer player;
+        public Action timeToDrink;
+
+        private Timer timerMonster;
+        private string configurationFile;
+        private int refDuration;
 
         private void InitializeConfiguration()
         {
@@ -59,23 +64,11 @@ namespace MonsterReminder.Sample
             string jsonString = File.ReadAllText(configurationFile);
 
             Configuration = JsonSerializer.Deserialize<Configuration>(jsonString);
-
-            //if (configuration.ReminderDuration != null)
-            //    monsterReminderDuration.Text = configuration.ReminderDuration;
-
-            //if (configuration.RegisterSound != null)
-            //    textRegisterAudioFile.Text = configuration.RegisterSound;
-
-            //if (configuration.ReminderSound != null)
-            //    textReminderAudioFile.Text = configuration.ReminderSound;
         }
 
         public void SaveConfiguration()
         {
             Configuration.LastUpdate = DateTime.Now;
-            //configuration.ReminderDuration = monsterReminderDuration.Text;
-            //configuration.RegisterSound = textRegisterAudioFile.Text;
-            //configuration.ReminderSound = textReminderAudioFile.Text;
 
             JsonSerializerOptions options = new() { WriteIndented = true };
             string jsonString = JsonSerializer.Serialize(Configuration, options);
@@ -83,22 +76,9 @@ namespace MonsterReminder.Sample
             File.WriteAllText(configurationFile, jsonString);
         }
 
-        private Timer timerMonster;
-
-        public readonly WMPLib.WindowsMediaPlayer player;
-
-        private void InitializeSoundPlayer()
-        {
-            //audioFile = @"F:\Sons\Chansons\Various Artists\Chirac en prison.mp3";
-            //audioFile = @"F:\Code\C#\MonsterReminder\Sounds\Abdos Par Vivi.3gp";
-
-            //textRegisterAudioFile.Text = Path.Combine(pathSounds, "prepare_monster.3gp");
-            //textReminderAudioFile.Text = Path.Combine(pathSounds, "chercher_monster.3gp");
-        }
-
         private void InitializeTimerMonster()
         {
-            timerMonster = new Timer
+            timerMonster = new()
             {
                 Interval = 60000,
                 AutoReset = false
@@ -112,20 +92,14 @@ namespace MonsterReminder.Sample
             MonsterIsReadyToDrink();
         }
 
-        public DateTime RefTime { get; private set; }
-        int refDuration;
-        public bool MonsterInTheFridge { get; private set; } = false;
-
         public void RegisterMonster()
         {
             RefTime = DateTime.Now;
             MonsterInTheFridge = true;
-            //player.URL = textRegisterAudioFile.Text;
             player.URL = Configuration.RegisterSound;
 
             try
             {
-                //refDuration = 60000 * Convert.ToInt32(monsterReminderDuration.Text);
                 refDuration = 60000 * Convert.ToInt32(Configuration.ReminderDuration);
             }
             catch (Exception err)
@@ -139,10 +113,6 @@ namespace MonsterReminder.Sample
             timerMonster.Interval = refDuration;
             timerMonster.Start();
 
-            //MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\redmonsterlogo.ico");
-            //MyNotifyIcon.Icon = new Icon("/Icons/redmonsterlogo.ico");
-            //MyNotifyIcon.Icon = new Icon(Path.Combine(pathIcons, "redmonsterlogo.ico"));
-
             Debug.WriteLine($"{DateTime.Now}: Debug - Monster registered, reminder in {Configuration.ReminderDuration} minutes(s)");
         }
 
@@ -155,11 +125,7 @@ namespace MonsterReminder.Sample
             timerMonster.Stop();
 
             MonsterInTheFridge = false;
-            //player.URL = textReminderAudioFile.Text;
             player.URL = Configuration.ReminderSound;
-
-            //MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
-            //MyNotifyIcon.Icon = new Icon(Path.Combine(pathIcons, "MonsterLogo.ico"));
         }
 
         public void UnRegisteredMonster()
@@ -168,9 +134,6 @@ namespace MonsterReminder.Sample
 
             MonsterInTheFridge = false;
             timerMonster.Stop();
-
-            //MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
-            //MyNotifyIcon.Icon = new Icon(Path.Combine(pathIcons, "MonsterLogo.ico"));
         }
 
         public int CalculateProgressValue()
@@ -186,9 +149,5 @@ namespace MonsterReminder.Sample
 
             return (int)percent;
         }
-
-        //public delegate void TimeToDrink();
-        //public TimeToDrink timeToDrink;
-        public Action timeToDrink;
     }
 }

@@ -3,8 +3,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
-using System.Text.Json;
 using System.Timers;
 using System.Windows;
 using Timer = System.Timers.Timer;
@@ -16,12 +14,8 @@ namespace MonsterReminder.Sample
     /// </summary>
     public partial class SimpleWindowWithNotifyIcon : Window
     {
-        //private Timer timerMonster;
         private Timer timerSingleClick;
         private Timer timerRefreshScreen;
-
-        //private string pathSounds;
-        //private string pathIcons;
 
         private readonly MonsterController MonsterController;
 
@@ -29,33 +23,15 @@ namespace MonsterReminder.Sample
         {
             InitializeComponent();
 
-            InitializePath();
-
-            //InitializeConfiguration();
-
-            //InitializeTimerMonster();
-
             InitializeTimerSingleClick();
 
             InitializeTimerRefreshScreen();
-
-            //InitializeSoundPlayer();
-
-            pouf = Properties.Resources.ResourceKeyTest;
 
             MonsterController = MonsterController.Instance;
 
             MonsterController.timeToDrink = ReadyToDrink;
 
             UpdateScreenFields();
-        }
-
-        string pouf;
-
-        private void InitializePath()
-        {
-            //pathSounds = Path.Combine(Environment.CurrentDirectory, @"Sounds\");
-            //pathIcons  = Path.Combine(Environment.CurrentDirectory, @"Icons\");
         }
 
         private void InitializeTimerRefreshScreen()
@@ -291,21 +267,16 @@ namespace MonsterReminder.Sample
 
         private void ImagePlayRegisterSound_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            //player.URL = textRegisterAudioFile.Text;
             MonsterController.player.URL = textRegisterAudioFile.Text;
         }
 
         private void ImagePlayReminderSound_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            //player.URL = textReminderAudioFile.Text;
             MonsterController.player.URL = textReminderAudioFile.Text;
         }
 
         private void ButtonTest_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("---------------------------------");
-            Debug.WriteLine($"pouf: {pouf}");
-
             ListSounds listSounds = new();
             listSounds.Show();
 
