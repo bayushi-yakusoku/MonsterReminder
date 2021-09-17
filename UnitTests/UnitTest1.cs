@@ -25,5 +25,49 @@ namespace MonsterReminder.UnitTests
         {
             return x + y;
         }
+
+        [Fact]
+        public void TestAddSong()
+        {
+            Box box = new();
+            box.ListSongs.Add("pouf");
+            box.ListSongs.Add("Wrecked");
+            box.ListSongs.Add("pouf");
+
+            Assert.Equal(2, box.ListSongs.Distinct().Count());
+
+            Assert.Equal(3, box.ListSongs.Count);
+        }
+
+        [Fact]
+        public void TestAddReminders()
+        {
+            Box box = new();
+            box.ListReminders.Add("1", "pouf");
+            box.ListReminders.Add("2", "pouf");
+
+            Assert.Equal(2, box.ListReminders.Count);
+        }
+
+        [Fact]
+        public void TestExistMethod()
+        {
+            List<string> Songs = new();
+
+            Songs.Add("Wrecked");
+            Songs.Add("Saint");
+
+            string name = "Saint";
+            Assert.True(Songs.Exists( s => s == name ));
+
+            name = "pouf";
+            Assert.False(Songs.Exists( s => s == name ));
+        }
+    }
+
+    class Box
+    {
+        public readonly List<string> ListSongs = new();
+        public readonly Dictionary<string, string> ListReminders = new();
     }
 }

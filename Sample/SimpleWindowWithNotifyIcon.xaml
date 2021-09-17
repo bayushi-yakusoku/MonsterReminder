@@ -41,9 +41,19 @@
                                    Source="/Icons/Remove.png" />
                         </MenuItem.Icon>
                     </MenuItem>
+                    <MenuItem Header="Configure Sounds"
+                              Click="MenuItem_ConfigureSounds">
+                        <MenuItem.Icon>
+                            <Image Width="16"
+                                   Height="16"
+                                   Source="/Icons/Play.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+
                     <Separator/>
+
                     <MenuItem Header="{x:Static my:Resources.CtxMenuQuit}"
-                              Click="ImageClose_MouseLeftButtonUp">
+                              Click="MenuItem_Quit">
                         <MenuItem.Icon>
                             <Image Width="16"
                                    Height="16"

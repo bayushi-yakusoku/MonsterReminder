@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
@@ -10,10 +11,10 @@ namespace MonsterReminder.Sample
     class Configuration
     {
         public DateTimeOffset LastUpdate { get; set; }
-
         public string ReminderDuration { get; set; }
         public string ReminderSound { get; set; }
         public string RegisterSound { get; set; }
+        public List<string> ReminderSounds { get; set; } = new();
     }
 
     class MonsterController
@@ -31,6 +32,7 @@ namespace MonsterReminder.Sample
 #endif
 
             player = new WMPLib.WindowsMediaPlayer();
+            random = new();
 
             InitializeConfiguration();
             InitializeTimerMonster();
@@ -46,6 +48,7 @@ namespace MonsterReminder.Sample
         private Timer timerMonster;
         private string configurationFile;
         private int refDuration;
+        Random random;
 
         private void InitializeConfiguration()
         {
@@ -126,7 +129,8 @@ namespace MonsterReminder.Sample
             timerMonster.Stop();
 
             MonsterInTheFridge = false;
-            player.URL = Configuration.ReminderSound;
+
+            PlayOneRandomReminder();
         }
 
         public void UnRegisteredMonster()
@@ -149,6 +153,28 @@ namespace MonsterReminder.Sample
                 percent = 100;
 
             return (int)percent;
+        }
+
+        public bool AddReminderSound(string sound)
+        {
+            if (Configuration.ReminderSounds.Exists(s => s == sound))
+                return false;
+
+            Configuration.ReminderSounds.Add(sound);
+            return true;
+        }
+
+        public bool RemoveReminderSound(string sound) => Configuration.ReminderSounds.Remove(sound);
+
+        public void PlayOneRandomReminder()
+        {
+            int limit = Configuration.ReminderSounds.Count;
+
+            int choosen = random.Next(limit);
+
+            player.URL = Configuration.ReminderSounds[choosen];
+
+            Debug.WriteLine($"Sound played: n°{choosen} - {Configuration.ReminderSounds[choosen]}");
         }
     }
 }

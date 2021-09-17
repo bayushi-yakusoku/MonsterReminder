@@ -5,10 +5,110 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MonsterReminder.Sample"
         mc:Ignorable="d"
-        Title="ListSounds" Height="450" Width="800">
-    <Grid>
-        <TextBox Grid.Row="0" Grid.Column="0"
-                 x:Name="TextBoxTest" 
-                 d:Text="design sample text"/>
-    </Grid>
+        Title="ListSounds"
+        Height="Auto"
+        Width="Auto"
+        SizeToContent="WidthAndHeight"
+        ShowInTaskbar="False" 
+        ResizeMode="NoResize" 
+        Icon="/Icons/MonsterLogo.ico" 
+        WindowStyle="None" >
+
+    <StackPanel>
+        <StatusBar>
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+
+            <StatusBarItem>
+                <TextBlock Text="title"/>
+            </StatusBarItem>
+
+            <StatusBarItem Grid.Column="1">
+                <Image Source="/Icons/Remove.png" 
+                       x:Name="imageMinimize"
+                       MouseLeftButtonUp="Image_Minimize_MouseLeftButtonUp" />
+            </StatusBarItem>
+        </StatusBar>
+
+        <Grid d:ShowGridLines="True">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <ListView Grid.Row="0" Grid.Column="0"
+                      Width="250"
+                      Height="300"
+                      x:Name="ListViewSounds">
+
+            </ListView>
+
+            <Grid d:ShowGridLines="True"
+                  Grid.Row="1" Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid d:ShowGridLines="True"
+                      Grid.Row="0" Grid.Column="0">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40" />
+                    </Grid.RowDefinitions>
+
+                    <TextBox Grid.Column="0" Grid.Row="0"
+                             Margin="10,10,10,10"
+                             Width="150"
+                             x:Name="TextBoxSoundName"
+                             d:Text="sound name..."/>
+
+                    <Image Grid.Column="1" Grid.Row="0"
+                           Source="/Icons/folder.png" 
+                           Margin="5,5,5,5"
+                           MouseLeftButtonUp="Image_Folder_MouseLeftButtonUp"/>
+
+                    <Image Grid.Column="2" Grid.Row="0"
+                           Source="/Icons/Add.png" 
+                           Margin="10,10,10,10"
+                           MouseLeftButtonUp="Image_Click_AddSound"/>
+                </Grid>
+                
+                <Grid d:ShowGridLines="True"
+                      Grid.Row="1" Grid.Column="0">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40" />
+                        </Grid.RowDefinitions>
+
+                        <Button Grid.Column="0" Grid.Row="1"
+                            Margin="10,10,10,10"
+                            Content="Remove Sound"
+                            Click="Button_Click_RemoveSound"/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </StackPanel>
 </Window>

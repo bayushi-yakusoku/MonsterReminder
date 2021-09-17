@@ -235,9 +235,7 @@ namespace MonsterReminder.Sample
 
         private void ImageClose_MouseLeftButtonUp(object sender, RoutedEventArgs e)
         {
-            UpdateConfiguration();
-            MonsterController.SaveConfiguration();
-            Close();
+            Quit();
         }
 
         private void ButtonStop_Click(object sender, RoutedEventArgs e)
@@ -277,14 +275,46 @@ namespace MonsterReminder.Sample
 
         private void ButtonTest_Click(object sender, RoutedEventArgs e)
         {
+            DisplayListSounds();
+        }
+
+        private void DisplayListSounds()
+        {
             ListSounds listSounds = new();
             listSounds.Show();
 
             int margin = 10;
 
-            listSounds.Top = Top - (listSounds.Height - Height) - margin;
-            listSounds.Left = Left - (listSounds.Width - Width) - margin;
+            if (WindowState == WindowState.Minimized)
+            {
+                Rect desktopWorkingArea = SystemParameters.WorkArea;
+
+                listSounds.Left = desktopWorkingArea.Right - (listSounds.Width + margin);
+                listSounds.Top = desktopWorkingArea.Bottom - (listSounds.Height + margin);
+            }
+            else
+            {
+                // appear on the side:
+                listSounds.Top = Top - (listSounds.Height - Height);
+                listSounds.Left = Left - Width;
+            }
         }
 
+        private void MenuItem_ConfigureSounds(object sender, RoutedEventArgs e)
+        {
+            DisplayListSounds();
+        }
+
+        private void MenuItem_Quit(object sender, RoutedEventArgs e)
+        {
+            Quit();
+        }
+
+        private void Quit()
+        {
+            UpdateConfiguration();
+            MonsterController.SaveConfiguration();
+            Close();
+        }
     }
 }
