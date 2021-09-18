@@ -21,7 +21,7 @@ namespace MonsterReminder.UnitTests
             Assert.Equal(5, Add(2, 2));
         }
 
-        int Add(int x, int y)
+        static int Add(int x, int y)
         {
             return x + y;
         }

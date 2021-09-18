@@ -33,23 +33,6 @@ namespace MonsterReminder.Sample
             MonsterController.PlayOneRandomReminder();
         }
 
-        private string JsonConfiguration()
-        {
-            JsonSerializerOptions options = new()
-            {
-                WriteIndented = true
-            };
-            
-            return JsonSerializer.Serialize(MonsterController.Configuration, options);
-        }
-
-        private string GetSoundsList()
-        {
-            string separator = "\n- ";
-
-            return $"- {string.Join(separator, MonsterController.Configuration.ReminderSounds)}";
-        }
-
         private void Image_Click_AddSound(object sender, RoutedEventArgs e)
         {
             if (TextBoxSoundName.Text != "")
@@ -92,7 +75,7 @@ namespace MonsterReminder.Sample
             TextBoxSoundName.Text = SelectFile();
         }
 
-        private string SelectFile()
+        private static string SelectFile()
         {
             OpenFileDialog openFileDialog = new();
 

@@ -48,7 +48,7 @@ namespace MonsterReminder.Sample
         private Timer timerMonster;
         private string configurationFile;
         private int refDuration;
-        Random random;
+        readonly Random random;
 
         private void InitializeConfiguration()
         {

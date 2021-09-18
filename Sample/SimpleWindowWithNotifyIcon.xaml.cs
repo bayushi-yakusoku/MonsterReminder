@@ -121,7 +121,7 @@ namespace MonsterReminder.Sample
             }
         }
 
-        private string SelectAudioFile()
+        private static string SelectFile()
         {
             OpenFileDialog openFileDialog = new();
 
@@ -245,7 +245,7 @@ namespace MonsterReminder.Sample
 
         private void ButtonSelectReminderAudioFile_Click(object sender, RoutedEventArgs e)
         {
-            textReminderAudioFile.Text = SelectAudioFile();
+            textReminderAudioFile.Text = SelectFile();
             MonsterController.Configuration.ReminderSound = textReminderAudioFile.Text;
         }
 
@@ -259,7 +259,7 @@ namespace MonsterReminder.Sample
         private void ButtonSelectRegisterAudioFile_Click(object sender, RoutedEventArgs e)
         {
 
-            textRegisterAudioFile.Text = SelectAudioFile();
+            textRegisterAudioFile.Text = SelectFile();
             MonsterController.Configuration.RegisterSound = textRegisterAudioFile.Text;
         }
 
