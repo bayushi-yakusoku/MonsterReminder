@@ -1,9 +1,10 @@
 ﻿using Microsoft.Win32;
+using MonsterReminder.Controller;
 using System;
 using System.Text.Json;
 using System.Windows;
 
-namespace MonsterReminder.Sample
+namespace MonsterReminder.View
 {
     /// <summary>
     /// Interaction logic for ListSounds.xaml

@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Timers;
 
 
-namespace MonsterReminder.Sample
+namespace MonsterReminder.Controller
 {
     class Configuration
     {
@@ -124,7 +124,7 @@ namespace MonsterReminder.Sample
         {
             Debug.WriteLine($"{DateTime.Now}: Debug - Ring!");
 
-            timeToDrink();
+            timeToDrink?.Invoke();
 
             timerMonster.Stop();
 

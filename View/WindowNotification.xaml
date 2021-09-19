@@ -1,0 +1,67 @@
+﻿<Window x:Class="MonsterReminder.View.WindowNotification"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MonsterReminder.View"
+        mc:Ignorable="d"
+        
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:my="clr-namespace:MonsterReminder.Properties"
+        
+        Title="WindowNotification" 
+        Height="Auto"
+        Width="Auto"
+        SizeToContent="WidthAndHeight"
+        WindowState="Minimized"
+        Visibility="Hidden"
+        d:Visibility="Visible"
+        ShowInTaskbar="False" 
+        ResizeMode="NoResize" 
+        Icon="/Icons/MonsterLogo.ico" 
+        WindowStyle="None">
+
+    <tb:TaskbarIcon x:Name="MyNotifyIcon" 
+                        IconSource="/Icons/MonsterLogo.ico" 
+                        ToolTipText="{x:Static my:Resources.TrayIconToolTip}" 
+                        
+                        TrayLeftMouseUp="MyNotifyIcon_LeftClick"
+                        TrayRightMouseUp="MyNotifyIcon_RightClick"
+                        TrayMouseDoubleClick="MyNotifyIcon_DoubleClick">
+
+        <!-- Set a simple context menu  -->
+        <!-- the data context of the context menu is the NotifyIcon itself (see more about this in DataBinding samples) -->
+        <tb:TaskbarIcon.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="{x:Static my:Resources.CtxMenuRemove}"
+                              Click="MenuItem_Remove_Click">
+                    <MenuItem.Icon>
+                        <Image Width="16"
+                                   Height="16"
+                                   Source="/Icons/Remove.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Configure Sounds"
+                              Click="MenuItem_ConfigureSounds">
+                    <MenuItem.Icon>
+                        <Image Width="16"
+                                   Height="16"
+                                   Source="/Icons/Play.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+
+                <Separator/>
+
+                <MenuItem Header="{x:Static my:Resources.CtxMenuQuit}"
+                              Click="MenuItem_Quit">
+                    <MenuItem.Icon>
+                        <Image Width="16"
+                                   Height="16"
+                                   Source="/Icons/Error.ico" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+        </tb:TaskbarIcon.ContextMenu>
+    </tb:TaskbarIcon>
+
+</Window>

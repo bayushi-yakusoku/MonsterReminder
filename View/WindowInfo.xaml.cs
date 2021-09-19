@@ -1,37 +1,36 @@
 ﻿using Microsoft.Win32;
+using MonsterReminder.Controller;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Timers;
 using System.Windows;
 using Timer = System.Timers.Timer;
 
-namespace MonsterReminder.Sample
+namespace MonsterReminder.View
 {
     /// <summary>
     /// Interaction logic for SimpleWindowWithNotifyIcon.xaml
     /// </summary>
-    public partial class SimpleWindowWithNotifyIcon : Window
+    public partial class WindowInfo : Window
     {
-        private Timer timerSingleClick;
+        //private Timer timerSingleClick;
         private Timer timerRefreshScreen;
 
         private readonly MonsterController MonsterController;
 
-        public SimpleWindowWithNotifyIcon()
+        public WindowInfo()
         {
-            InitializeComponent();
-
-            InitializeTimerSingleClick();
-
             InitializeTimerRefreshScreen();
 
             MonsterController = MonsterController.Instance;
 
             MonsterController.timeToDrink = ReadyToDrink;
 
-            UpdateScreenFields();
+            InitializeComponent();
+
         }
 
         private void InitializeTimerRefreshScreen()
@@ -45,17 +44,6 @@ namespace MonsterReminder.Sample
             timerRefreshScreen.Elapsed += Elapsed_TimerRefreshScreen;
         }
 
-        private void InitializeTimerSingleClick()
-        {
-            timerSingleClick = new Timer
-            {
-                Interval = 1000,
-                AutoReset = false
-            };
-
-            timerSingleClick.Elapsed += Elapsed_TimerSingleClick;
-        }
-
         /*
          * Due to known bug:
          * https://stackoverflow.com/questions/37333952/wpf-sizetocontent-widthandheight-windowstate-minimized-bug
@@ -63,6 +51,8 @@ namespace MonsterReminder.Sample
          */
         protected override void OnStateChanged(EventArgs e)
         {
+            Debug.WriteLine($"{DateTime.Now}: Debug - OnStateChanged");
+
             base.OnStateChanged(e);
 
             InvalidateMeasure();
@@ -70,10 +60,23 @@ namespace MonsterReminder.Sample
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            //clean up notifyicon (would otherwise stay open until application finishes)
-            MyNotifyIcon.Dispose();
+            Debug.WriteLine($"{DateTime.Now}: Debug - OnClosing");
+            Log("!!Debug - OnClosing");
+
+            timerRefreshScreen.Dispose();
 
             base.OnClosing(e);
+        }
+        protected override void OnInitialized(EventArgs e)
+        {
+            Debug.WriteLine($"{DateTime.Now}: Debug - OnInitialized");
+
+            base.OnInitialized(e);
+
+            UpdateScreenFields();
+            UpdateStatusBar();
+
+            timerRefreshScreen.Start();
         }
 
         private void ToggleDisplay()
@@ -106,17 +109,20 @@ namespace MonsterReminder.Sample
 
         }
 
-        private void UpdateProgressBar()
+        private void UpdateStatusBar()
         {
             if (MonsterController.MonsterInTheFridge)
             {
                 int progressValue = MonsterController.CalculateProgressValue();
+                string formatedRefTime = string.Format("{0:T}", MonsterController.RefTime);
 
                 Debug.WriteLine($"{DateTime.Now}: Debug - Progress: {progressValue}%");
 
                 Dispatcher.Invoke(() =>
                 {
                     progressBarReminder.Value = progressValue;
+                    textRegisteredAt.Text = $"{Properties.Resources.StatusBarTextRegisteredAt} {formatedRefTime}";
+
                 });
             }
         }
@@ -150,19 +156,10 @@ namespace MonsterReminder.Sample
             MonsterController.Configuration.ReminderSound = textReminderAudioFile.Text;
         }
 
-        private void RegisterMonster()
-        {
-            MonsterController.RegisterMonster();
-            MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\redmonsterlogo.ico");
-
-            string formatedRefTime = string.Format("{0:T}", MonsterController.RefTime);
-            textRegisteredAt.Text = $"{Properties.Resources.StatusBarTextRegisteredAt} {formatedRefTime}";
-        }
-
         private void UnregisterMonster()
         {
             MonsterController.UnRegisteredMonster();
-            MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
+            //MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
             textRegisteredAt.Text = Properties.Resources.StatusBarTextNoReminder;
         }
 
@@ -172,66 +169,22 @@ namespace MonsterReminder.Sample
             {
                 Debug.WriteLine($"Delegate TimeToDrink!!!");
                 textRegisteredAt.Text = Properties.Resources.StatusBarTextReadyToDrink;
-                MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
+                //MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
             });
         }
 
         /* **********************************************************
          *  ELAPSED
          * ********************************************************** */
-        private void Elapsed_TimerSingleClick(object sender, ElapsedEventArgs e)
-        {
-            Debug.WriteLine($"{DateTime.Now}: Debug - Single Click Event!");
-
-            /*
-             * Will be executed from a thread different from the UI Element owner:
-             * https://stackoverflow.com/questions/9732709/the-calling-thread-cannot-access-this-object-because-a-different-thread-owns-it
-             *
-             */
-            Dispatcher.Invoke(() =>
-            {
-                ToggleDisplay();
-            });
-        }
 
         private void Elapsed_TimerRefreshScreen(object sender, ElapsedEventArgs e)
         {
-            UpdateProgressBar();
+            UpdateStatusBar();
         }
 
         /* **********************************************************
          *  EVENTS
          * ********************************************************** */
-
-        private void MyNotifyIcon_LeftClick(object sender, RoutedEventArgs e)
-        {
-            e.Handled = true;
-
-            timerSingleClick.Stop();
-            timerSingleClick.Start();
-        }
-
-        private void MyNotifyIcon_RightClick(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void MyNotifyIcon_DoubleClick(object sender, RoutedEventArgs e)
-        {
-            // preventing single click event to be fired after this double click
-            //e.Handled = true;
-
-            // Cancel Single click timer:
-            timerSingleClick.Stop();
-            Debug.WriteLine($"{DateTime.Now}: Debug - Double Click Event");
-
-            RegisterMonster();
-        }
-
-        private void MenuItem_Remove_Click(object sender, RoutedEventArgs e)
-        {
-            UnregisterMonster();
-        }
 
         private void ImageClose_MouseLeftButtonUp(object sender, RoutedEventArgs e)
         {
@@ -300,21 +253,22 @@ namespace MonsterReminder.Sample
             }
         }
 
-        private void MenuItem_ConfigureSounds(object sender, RoutedEventArgs e)
-        {
-            DisplayListSounds();
-        }
-
-        private void MenuItem_Quit(object sender, RoutedEventArgs e)
-        {
-            Quit();
-        }
-
         private void Quit()
         {
             UpdateConfiguration();
             MonsterController.SaveConfiguration();
             Close();
+        }
+
+        public static void Log(string message, 
+            [CallerFilePath] string file = "", 
+            [CallerLineNumber] int line = 0, 
+            [CallerMemberName] string member = "")
+        {
+            var s = string.Format("{0}:{1} - {2}: {3}", file, line, member, message);
+
+            Debug.WriteLine(s);
+            Console.WriteLine(s);
         }
     }
 }
