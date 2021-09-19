@@ -26,6 +26,8 @@ namespace MonsterReminder.View
             InitializeTimerSingleClick();
 
             MonsterController = MonsterController.Instance;
+            MonsterController.timeToDrink += ReadyToDrink;
+
             WindowsController = WindowsController.Instance;
         }
 
@@ -46,6 +48,11 @@ namespace MonsterReminder.View
             };
 
             timerSingleClick.Elapsed += Elapsed_TimerSingleClick;
+        }
+
+        private void ReadyToDrink()
+        {
+            MyNotifyIcon.Icon = new Icon(@"F:\Code\C#\MonsterReminder\Icons\MonsterLogo.ico");
         }
 
         /* **********************************************************

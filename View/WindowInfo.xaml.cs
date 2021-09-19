@@ -27,7 +27,7 @@ namespace MonsterReminder.View
 
             MonsterController = MonsterController.Instance;
 
-            MonsterController.timeToDrink = ReadyToDrink;
+            MonsterController.timeToDrink += ReadyToDrink;
 
             InitializeComponent();
 
