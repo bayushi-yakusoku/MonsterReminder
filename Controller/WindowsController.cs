@@ -6,6 +6,7 @@ using MonsterReminder.View;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using MonsterReminder.Tool;
 
 namespace MonsterReminder.Controller
 {
@@ -26,12 +27,22 @@ namespace MonsterReminder.Controller
         public void ShowWindowInfo()
         {
             Rect desktopWorkingArea = SystemParameters.WorkArea;
+            
+            if (WindowInfo == null)
+                WindowInfo = new();
 
-            WindowInfo = new();
+            WindowInfo.Closed += WindowInfo_Closed;
+
             WindowInfo.Show();
 
             WindowInfo.Left = desktopWorkingArea.Right - (WindowInfo.Width + margin);
             WindowInfo.Top = desktopWorkingArea.Bottom - (WindowInfo.Height + margin);
+        }
+
+        private void WindowInfo_Closed(object sender, EventArgs e)
+        {
+            Log.Debug("WindowInfo Closed event");
+            WindowInfo = null;
         }
 
         ListSounds ListSounds;

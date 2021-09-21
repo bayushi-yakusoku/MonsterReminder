@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using MonsterReminder.Controller;
+using MonsterReminder.Tool;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -61,7 +62,7 @@ namespace MonsterReminder.View
         protected override void OnClosing(CancelEventArgs e)
         {
             Debug.WriteLine($"{DateTime.Now}: Debug - OnClosing");
-            Log("!!Debug - OnClosing");
+            Log.Debug("!!Debug - OnClosing");
 
             timerRefreshScreen.Dispose();
 
@@ -258,17 +259,6 @@ namespace MonsterReminder.View
             UpdateConfiguration();
             MonsterController.SaveConfiguration();
             Close();
-        }
-
-        public static void Log(string message, 
-            [CallerFilePath] string file = "", 
-            [CallerLineNumber] int line = 0, 
-            [CallerMemberName] string member = "")
-        {
-            var s = string.Format("{0}:{1} - {2}: {3}", file, line, member, message);
-
-            Debug.WriteLine(s);
-            Console.WriteLine(s);
         }
     }
 }
