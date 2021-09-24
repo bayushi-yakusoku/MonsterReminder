@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonsterReminder.Tools;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -27,8 +28,7 @@ namespace MonsterReminder.Controller
         private MonsterController()
         {
 #if DEBUG
-            Debug.WriteLine("Private Constructor!");
-            Console.WriteLine("xxxxx");
+            Log.Debug("Private Constructor!");
 #endif
 
             player = new WMPLib.WindowsMediaPlayer();
@@ -48,7 +48,7 @@ namespace MonsterReminder.Controller
         private Timer timerMonster;
         private string configurationFile;
         private int refDuration;
-        readonly Random random;
+        private readonly Random random;
 
         private void InitializeConfiguration()
         {
@@ -58,7 +58,7 @@ namespace MonsterReminder.Controller
 
             if (File.Exists(configurationFile))
             {
-                Debug.WriteLine($"Configuration File exists!: {configurationFile}");
+                Log.Debug($"Configuration File exists!: {configurationFile}");
                 UploadConfiguration();
             }
         }
@@ -108,7 +108,7 @@ namespace MonsterReminder.Controller
             }
             catch (Exception err)
             {
-                Debug.WriteLine($"{DateTime.Now}: {err.Message}");
+                Log.Debug($"{err.Message}");
 
                 throw;
             }
@@ -117,12 +117,12 @@ namespace MonsterReminder.Controller
             timerMonster.Interval = refDuration;
             timerMonster.Start();
 
-            Debug.WriteLine($"{DateTime.Now}: Debug - Monster registered, reminder in {Configuration.ReminderDuration} minutes(s)");
+            Log.Debug($"Monster registered, reminder in {Configuration.ReminderDuration} minutes(s)");
         }
 
         private void MonsterIsReadyToDrink()
         {
-            Debug.WriteLine($"{DateTime.Now}: Debug - Ring!");
+            Log.Debug("Debug - Ring!");
 
             timeToDrink?.Invoke();
 
@@ -135,7 +135,7 @@ namespace MonsterReminder.Controller
 
         public void UnRegisteredMonster()
         {
-            Debug.WriteLine($"{DateTime.Now}: Debug - Remove Current Reminder!!");
+            Log.Debug("Remove Current Reminder!!");
 
             MonsterInTheFridge = false;
             timerMonster.Stop();
@@ -150,7 +150,9 @@ namespace MonsterReminder.Controller
             double percent = (msPassed / refDuration) * 100;
 
             if (percent > 100)
+            {
                 percent = 100;
+            }
 
             return (int)percent;
         }
@@ -158,7 +160,9 @@ namespace MonsterReminder.Controller
         public bool AddReminderSound(string sound)
         {
             if (Configuration.ReminderSounds.Exists(s => s == sound))
+            {
                 return false;
+            }
 
             Configuration.ReminderSounds.Add(sound);
             return true;

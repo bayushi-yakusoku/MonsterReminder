@@ -32,9 +32,9 @@
             </StatusBarItem>
 
             <StatusBarItem Grid.Column="1">
-                <Image Source="/Icons/Remove.png" 
-                       x:Name="imageMinimize"
-                       MouseLeftButtonUp="Image_Minimize_MouseLeftButtonUp" />
+                <Image Source="/Icons/Error.ico" 
+                       x:Name="imageClose"
+                       MouseLeftButtonUp="ImageClose_MouseLeftButtonUp" />
             </StatusBarItem>
         </StatusBar>
 

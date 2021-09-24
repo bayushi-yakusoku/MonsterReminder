@@ -1,7 +1,6 @@
-﻿using Microsoft.Win32;
-using MonsterReminder.Controller;
+﻿using MonsterReminder.Controller;
+using MonsterReminder.Tools;
 using System;
-using System.Text.Json;
 using System.Windows;
 
 namespace MonsterReminder.View
@@ -11,36 +10,38 @@ namespace MonsterReminder.View
     /// </summary>
     public partial class ListSounds : Window
     {
-        readonly MonsterController MonsterController;
+        private readonly MonsterController monsterController;
 
         public ListSounds()
         {
             InitializeComponent();
 
-            MonsterController = MonsterController.Instance;
+            monsterController = MonsterController.Instance;
 
             LoadListSounds();
         }
 
-        protected override void OnStateChanged(EventArgs e)
+        private void LoadListSounds()
         {
-            base.OnStateChanged(e);
-
-            InvalidateMeasure();
+            foreach (string sound in monsterController.Configuration.ReminderSounds)
+            {
+                ListViewSounds.Items.Add(sound);
+            }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void SavingSoundList()
         {
-            MonsterController.PlayOneRandomReminder();
+            Log.Debug("Saving sounds list");
+
+            monsterController.Configuration.ReminderSounds.Clear();
+
+            foreach (string item in ListViewSounds.Items)
+            {
+                monsterController.AddReminderSound(item);
+            }
         }
 
-        private void Image_Click_AddSound(object sender, RoutedEventArgs e)
-        {
-            if (TextBoxSoundName.Text != "")
-                ListViewSounds.Items.Add(TextBoxSoundName.Text);
-        }
-
-        private void Button_Click_RemoveSound(object sender, RoutedEventArgs e)
+        private void RemoveSelectedSound()
         {
             int index = ListViewSounds.SelectedIndex;
 
@@ -50,40 +51,40 @@ namespace MonsterReminder.View
             }
         }
 
-        private void LoadListSounds()
+        /* **********************************************************
+         *  EVENTS
+         * ********************************************************** */
+
+        protected override void OnStateChanged(EventArgs e)
         {
-            foreach (string sound in MonsterController.Configuration.ReminderSounds)
+            base.OnStateChanged(e);
+
+            InvalidateMeasure();
+        }
+
+        private void Image_Click_AddSound(object sender, RoutedEventArgs e)
+        {
+            if (TextBoxSoundName.Text != "")
             {
-                ListViewSounds.Items.Add(sound);
+                ListViewSounds.Items.Add(TextBoxSoundName.Text);
             }
         }
 
-        private void Image_Minimize_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Button_Click_RemoveSound(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Saving sounds list");
-            MonsterController.Configuration.ReminderSounds.Clear();
+            RemoveSelectedSound();
+        }
 
-            foreach (string item in ListViewSounds.Items)
-            {
-                MonsterController.AddReminderSound(item);
-            }
+        private void ImageClose_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            SavingSoundList();
 
             Close();
         }
 
         private void Image_Folder_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            TextBoxSoundName.Text = SelectFile();
-        }
-
-        private static string SelectFile()
-        {
-            OpenFileDialog openFileDialog = new();
-
-            if (openFileDialog.ShowDialog() == true)
-                return openFileDialog.FileName;
-
-            return "";
+            TextBoxSoundName.Text = Tool.SelectFile();
         }
     }
 }

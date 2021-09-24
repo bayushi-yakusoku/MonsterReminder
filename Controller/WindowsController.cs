@@ -1,61 +1,72 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using MonsterReminder.View;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using MonsterReminder.Tool;
+using MonsterReminder.Tools;
 
 namespace MonsterReminder.Controller
 {
     class WindowsController
     {
-        private static Lazy<WindowsController> lazy = new(() => new());
+        private static readonly Lazy<WindowsController> lazy = new(() => new());
         public static WindowsController Instance => lazy.Value;
 
         private WindowsController()
         {
-            Debug.WriteLine($"WindowsController: Private Constructor");
+            Log.Debug("Private Constructor");
         }
 
-        int margin = 10;
-
-        WindowInfo WindowInfo;
+        private readonly int margin = 10;
+        private WindowInfo windowInfo;
+        private ListSounds listSounds;
 
         public void ShowWindowInfo()
         {
             Rect desktopWorkingArea = SystemParameters.WorkArea;
             
-            if (WindowInfo == null)
-                WindowInfo = new();
+            if (windowInfo == null)
+            {
+                windowInfo = new();
+            }
 
-            WindowInfo.Closed += WindowInfo_Closed;
+            windowInfo.Closed += WindowInfo_Closed;
 
-            WindowInfo.Show();
+            windowInfo.WindowState = WindowState.Normal;
 
-            WindowInfo.Left = desktopWorkingArea.Right - (WindowInfo.Width + margin);
-            WindowInfo.Top = desktopWorkingArea.Bottom - (WindowInfo.Height + margin);
+            windowInfo.Show();
+
+            windowInfo.Left = desktopWorkingArea.Right - (windowInfo.Width + margin);
+            windowInfo.Top = desktopWorkingArea.Bottom - (windowInfo.Height + margin);
         }
 
         private void WindowInfo_Closed(object sender, EventArgs e)
         {
-            Log.Debug("WindowInfo Closed event");
-            WindowInfo = null;
+            Log.Debug("Event");
+            windowInfo = null;
         }
-
-        ListSounds ListSounds;
 
         public void ShowListSounds()
         {
             Rect desktopWorkingArea = SystemParameters.WorkArea;
 
-            ListSounds = new();
-            ListSounds.Show();
+            if (listSounds == null)
+            {
+                listSounds = new();
+            }
 
-            ListSounds.Left = desktopWorkingArea.Right - (ListSounds.Width + margin);
-            ListSounds.Top = desktopWorkingArea.Bottom - (ListSounds.Height + margin);
+            listSounds.Closed += ListSounds_Closed;
+
+            listSounds.WindowState = WindowState.Normal;
+
+            listSounds.Show();
+
+            listSounds.Left = desktopWorkingArea.Right - (listSounds.Width + margin);
+            listSounds.Top = desktopWorkingArea.Bottom - (listSounds.Height + margin);
+        }
+
+        private void ListSounds_Closed(object sender, EventArgs e)
+        {
+            Log.Debug("Event");
+            listSounds = null;
         }
     }
 }
