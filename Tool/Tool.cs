@@ -27,7 +27,7 @@ namespace MonsterReminder.Tools
             string s = $"{DateTime.Now} - {file}:{line} - {member}: {message}";
 
             System.Diagnostics.Debug.WriteLine(s);
-            Console.WriteLine(s);
+            //Console.WriteLine(s);
         }
     }
 }
