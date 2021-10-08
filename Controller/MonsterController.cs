@@ -54,7 +54,7 @@ namespace MonsterReminder.Controller
         {
             string fileName = "configuration.json";
 
-            configurationFile = Path.Combine(AppContext.BaseDirectory, "..", fileName);
+            configurationFile = Path.Combine(AppContext.BaseDirectory, fileName);
 
             if (File.Exists(configurationFile))
             {
@@ -63,7 +63,7 @@ namespace MonsterReminder.Controller
             }
         }
 
-        void UploadConfiguration()
+        private void UploadConfiguration()
         {
             string jsonString = File.ReadAllText(configurationFile);
 

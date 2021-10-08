@@ -25,6 +25,8 @@
                         IconSource="/Icons/MonsterLogo.ico" 
                         ToolTipText="{x:Static my:Resources.TrayIconToolTip}" 
                         
+                    TrayToolTipOpen="MyNotifyIcon_ToolTipOpening"
+                    
                         TrayLeftMouseUp="MyNotifyIcon_LeftClick"
                         TrayRightMouseUp="MyNotifyIcon_RightClick"
                         TrayMouseDoubleClick="MyNotifyIcon_DoubleClick">

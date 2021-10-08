@@ -103,6 +103,27 @@ namespace MonsterReminder.View
             RegisterMonster();
         }
 
+        private void MyNotifyIcon_ToolTipOpening(object sender, RoutedEventArgs e)
+        {
+            if (!MonsterController.MonsterInTheFridge)
+            {
+                MyNotifyIcon.ToolTipText = Properties.Resources.StatusBarTextNoReminder;
+                return;
+            }
+
+            double maxTic = 20;
+
+            int percent = MonsterController.CalculateProgressValue();
+            int tic = (int)(maxTic * percent / 100);
+            string progress = new String('#', tic).PadRight((int)maxTic, ' ');
+
+            DateTime dateTime = MonsterController.RefTime
+                .AddMinutes(Convert.ToDouble(MonsterController.Configuration.ReminderDuration));
+
+            MyNotifyIcon.ToolTipText = $"Delivery: {dateTime:T}\n[{progress}]";
+
+        }
+
         private void MenuItem_Remove_Click(object sender, RoutedEventArgs e)
         {
             UnregisterMonster();
